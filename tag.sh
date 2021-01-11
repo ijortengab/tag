@@ -131,9 +131,9 @@ Usage: tag <command> [arguments|STDIN]
 
 Available Commands
    add        Add tag(s) to the file (Alias: a)
-   delete     Delete tag(s) from the file. Alias: d.
-   clear      Clear all the tag(s) from the file. Alias: c
-   find       Find tag by text or word. Alias: f.
+   delete     Delete tag(s) from the file (Alias: d)
+   clear      Clear all the tag(s) from the file (Alias: c)
+   find       Find tag by text or word (Alias: f)
 
 Format Command
    Add:       tag add|a <tag> [<tag>]... <file|STDIN>
@@ -144,6 +144,8 @@ Format Command
 Options for Add, Delete, and Clear command
    -n, --dry-run
         Perform a trial run with no changes made
+   -d, --directory
+        Set the directory if file argument is not relative to $PWD.
 
 Options for Find command
    -1   Find in starting point directory level depth only and no recursive.
