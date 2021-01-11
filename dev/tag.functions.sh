@@ -236,8 +236,10 @@ TagManager() {
         else
             output="$full_path_new"
         fi
-        if [[ $dry_run != 1 ]];then
+        if [[ ! $dry_run == 1 ]];then
             mv "$full_path" "$full_path_new" && echo "$output"
+        else
+            echo "$output"
         fi
     fi
 }
