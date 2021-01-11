@@ -318,6 +318,8 @@ FindManager() {
     if [[ ${#tags_arguments[@]} -gt 1 ]];then
         grep_arg=" \"($grep_arg)\""
         grep_arg_E=' -E'
+    else
+        grep_arg=" $grep_arg"
     fi
     if [[ $is_recursive == 1 ]];then
         grep_arg_i=' -i'
