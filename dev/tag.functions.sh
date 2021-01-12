@@ -166,7 +166,7 @@ PathInfo() {
 #
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
-TagManager() {
+TagFile() {
     local tags tags_new tags_new_filtered
     local tags_new_filtered_stringify tags_new_stringify
     local basename_new full_path_new output
@@ -244,6 +244,10 @@ TagManager() {
     fi
 }
 
+TagDirectory() {
+    echo -n
+}
+
 # Generator find command dan mengekseskusinya (optional).
 #
 # Globals:
@@ -258,7 +262,7 @@ TagManager() {
 #
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
-FindManager() {
+FindGenerator() {
     local command
     local find_command
     local directory_exclude directory_exclude_default=() _directory_exclude

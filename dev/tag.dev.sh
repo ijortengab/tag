@@ -103,20 +103,18 @@ else
             # Delete the last argument.
             shift
     esac
-
 fi
 # VarDump files_arguments tags_arguments
 
 case $command in
-    find|f) FindManager ;;
+    find|f) FindGenerator ;;
     *) set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
             PathInfo "$1"
             if [ -d "$full_path" ];then
-                # Todo.
-                echo -n
+                TagDirectory
             elif [ -f "$full_path" ];then
-                TagManager
+                TagFile
             else
                 Error "File not found: ${basename}."
             fi
