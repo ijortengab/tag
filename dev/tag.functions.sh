@@ -72,6 +72,11 @@ Example
    tag add love rock "November Rain.mp3"
    ls *.jpg | tag add trip 2021
 
+Tagging directory.
+   - Tag the directory doesn't rename the directory name.
+   - Tag the directory will create a `.tag` file inside the directory and put
+     the tags inside that file.
+
 EOF
 }
 
