@@ -67,10 +67,10 @@ Available Commands
    find       Find tag by text or word (Alias: f)
 
 Format Command
-   Add:       tag add|a <tag> [<tag>]... <file|STDIN>
-   Delete:    tag delete|d <tag> [<tag>]... <file|STDIN>
-   Clear:     tag clear|c <file|STDIN> [<file>]...
-   Find:      tag find|f <tag> [<tag>]...
+   tag add|a [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag clear|c [-n] [-d <n>] <file|STDIN> [<file>]...
+   tag find|f [-1aiwp] [-x <n>] <tag> [<tag>]...
 
 Options for Add, Delete, and Clear command
    -n, --dry-run
@@ -96,4 +96,9 @@ Options for Find command
 Example
    tag add love rock "November Rain.mp3"
    ls *.jpg | tag add trip 2021
+
+Tagging directory.
+   - Tag the directory doesn't rename the directory name.
+   - Tag the directory will create a `.tag` file inside the directory and put
+     the tags inside that file.
 ```

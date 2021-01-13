@@ -9,9 +9,11 @@ SOURCE=$(<tag.dev.sh)
 FILE_PARSE_OPTIONS=$(<tag.parse_options.min.txt)
 FILE_FUNCTIONS=$(<tag.functions.sh)
 FILE_ARRAY_DIFF=$(<bash/functions/array-diff/dev/array-diff.function.sh)
+FILE_ARRAY_UNIQUE=$(<bash/functions/array-unique/dev/array-unique.function.sh)
 SOURCE="${SOURCE//source \$(dirname \$0)\/tag.parse_options.sh/$FILE_PARSE_OPTIONS}"
 SOURCE="${SOURCE//source \$(dirname \$0)\/tag.functions.sh/$FILE_FUNCTIONS}"
 SOURCE="${SOURCE//source \$(dirname \$0)\/bash\/functions\/array-diff\/dev\/array-diff.function.sh/$FILE_ARRAY_DIFF}"
+SOURCE="${SOURCE//source \$(dirname \$0)\/bash\/functions\/array-unique\/dev\/array-unique.function.sh/$FILE_ARRAY_UNIQUE}"
 echo "${SOURCE}" > ../tag.sh
 # Delete line.
 sed -i '/var-dump\.function\.sh/d' ../tag.sh

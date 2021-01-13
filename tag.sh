@@ -49,7 +49,7 @@ set -- "${_new_arguments[@]}"
 
 unset _new_arguments
 
-# Computes the difference of arrays
+# Computes the difference of arrays.
 #
 # Globals:
 #   Modified: _return
@@ -91,6 +91,40 @@ ArrayDiff() {
         _return=("${source[@]}")
     fi
 }
+# Removes duplicate values from an array.
+#
+# Globals:
+#   Modified: _return
+#
+# Arguments:
+#   1 = Parameter of the input array.
+#
+# Returns:
+#   None
+#
+# Example:
+#   ```
+#   my=("cherry" "manggo" "blackberry" "manggo" "blackberry")
+#   ArrayUnique my[@]
+#   # Get result in variable `$_return`.
+#   # _return=("cherry" "manggo" "blackberry")
+#   ```
+ArrayUnique() {
+    local e source=("${!1}")
+    # inArray is alternative of ArraySearch.
+    inArray () {
+        local e match="$1"
+        shift
+        for e; do [[ "$e" == "$match" ]] && return 0; done
+        return 1
+    }
+    _return=()
+    for e in "${source[@]}";do
+        if ! inArray "$e" "${_return[@]}";then
+            _return+=("$e")
+        fi
+    done
+}
 
 # Print Short Usage of Command.
 #
@@ -105,8 +139,8 @@ ArrayDiff() {
 Usage() {
     cat <<- 'EOF'
 Usage:
-   tag add|a [-n] [-d <n>] <tag> [<tag>]... <file|STDIN>
-   tag delete|d [-n] [-d <n>] <tag> [<tag>]... <file|STDIN>
+   tag add|a [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
    tag clear|c [-n] [-d <n>] <file|STDIN> [<file>]...
    tag find|f [-1aiwp] [-x <n>] <tag> [<tag>]...
 
@@ -136,10 +170,10 @@ Available Commands
    find       Find tag by text or word (Alias: f)
 
 Format Command
-   Add:       tag add|a <tag> [<tag>]... <file|STDIN>
-   Delete:    tag delete|d <tag> [<tag>]... <file|STDIN>
-   Clear:     tag clear|c <file|STDIN> [<file>]...
-   Find:      tag find|f <tag> [<tag>]...
+   tag add|a [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag clear|c [-n] [-d <n>] <file|STDIN> [<file>]...
+   tag find|f [-1aiwp] [-x <n>] <tag> [<tag>]...
 
 Options for Add, Delete, and Clear command
    -n, --dry-run
@@ -165,6 +199,11 @@ Options for Find command
 Example
    tag add love rock "November Rain.mp3"
    ls *.jpg | tag add trip 2021
+
+Tagging directory.
+   - Tag the directory doesn't rename the directory name.
+   - Tag the directory will create a `.tag` file inside the directory and put
+     the tags inside that file.
 
 EOF
 }
@@ -260,7 +299,7 @@ PathInfo() {
 #
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
-TagManager() {
+TagFile() {
     local tags tags_new tags_new_filtered
     local tags_new_filtered_stringify tags_new_stringify
     local basename_new full_path_new output
@@ -301,23 +340,19 @@ TagManager() {
     tagInfo "$filename"
     case $command in
         add|a)
-            if [[ "${#tags_arguments[@]}" -gt 0 ]];then
-                tags_new=("${tags[@]}" "${tags_arguments[@]}")
-                tags_new_filtered=($(echo "${tags_new[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-                tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
-                basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
-            fi
+            tags_new=("${tags[@]}" "${tags_arguments[@]}")
+            tags_new_filtered=($(echo "${tags_new[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+            tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
+            basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
         ;;
         delete|d)
-            if [[ "${#tags_arguments[@]}" -gt 0 ]];then
-                ArrayDiff tags[@] tags_arguments[@]
-                tags_new=("${_return[@]}")
-                tags_new_stringify=$(printf %s "$f" "${tags_new[@]/#/ }" | cut -c2-)
-                if [[ ! "$tags_new_stringify" == "" ]];then
-                    basename_new="${filename}[${tags_new_stringify}].$extension"
-                else
-                    basename_new="${filename}.$extension"
-                fi
+            ArrayDiff tags[@] tags_arguments[@]
+            tags_new=("${_return[@]}")
+            tags_new_stringify=$(printf %s "$f" "${tags_new[@]/#/ }" | cut -c2-)
+            if [[ ! "$tags_new_stringify" == "" ]];then
+                basename_new="${filename}[${tags_new_stringify}].$extension"
+            else
+                basename_new="${filename}.$extension"
             fi
         ;;
         clear|c)
@@ -338,6 +373,95 @@ TagManager() {
     fi
 }
 
+TagDirectory() {
+    local e tags
+    echo -n
+
+    # Rebuild PathInfo()
+    dirname="$full_path"
+    full_path="${dirname}/.tag"
+    basename=""
+    filename=""
+    extension="tag"
+
+    tagInfo() {
+        if [ -f "$1" ];then
+            while IFS="" read -r p || [ -n "$p" ]
+            do
+              tags+=("$(printf '%s\n' "$p")")
+            done < "$1"
+        fi
+    }
+
+    tagInfo "$full_path"
+
+    case $command in
+        add|a)
+            ArrayDiff tags_arguments[@] tags[@]
+            tags_new=("${_return[@]}")
+            if [[ ${#tags_new[@]} -gt 0 ]];then
+                if [[ $dry_run == 1 ]];then
+                    string=$(<"$full_path")
+                    echo "$string"
+                    for e in "${tags_new[@]}"; do
+                        string="${string}"$'\n'"$e"
+                    done
+                    echo "$string"
+                else
+                    # Add EOL in end of file.
+                    # https://unix.stackexchange.com/a/161853
+                    if [ -f "$full_path" ];then
+                        tail -c1 < "$full_path"  | read -r _ || echo >> "$full_path"
+                    fi
+                    for e in "${tags_new[@]}"; do
+                        echo "$e" >> "$full_path"
+                    done
+                    cat "$full_path"
+                fi
+            fi
+        ;;
+        delete|d)
+            if [ -f "$full_path" ];then
+                ArrayDiff tags[@] tags_arguments[@]
+                if [[ ! ${#tags[@]} == ${#_return[@]} ]];then
+                    if [[ $dry_run == 1 ]];then
+                        echo -n
+                        string=$(<"$full_path")
+                        echo "$string"
+                        for e in "${tags_arguments[@]}"; do
+                            # sed -i "/^${e}$/d" "$full_path"
+                            string=$(echo "$string"| sed  "/^${e}$/d")
+                        done
+                        echo "$string"
+                    else
+                        for e in "${tags_arguments[@]}"; do
+                            sed -i "/^${e}$/d" "$full_path"
+                        done
+                        cat "$full_path"
+                    fi
+                fi
+            fi
+        ;;
+        clear|c)
+            if [ -f "$full_path" ];then
+                cat "$full_path" >&2
+                echo -ne "\e[93m"
+                read -rsn1 -p 'File .tag will be delete. Are you sure [y/n]: ' option
+                echo -ne "\e[39m"
+                if [[ $option == y ]];then
+                    if [[ ! $dry_run == 1 ]];then
+                        rm "$full_path" && echo Deleted.
+                    else
+                        echo Deleted.
+                    fi
+                else
+                    echo Canceled.
+                fi
+            fi
+    esac
+
+}
+
 # Generator find command dan mengekseskusinya (optional).
 #
 # Globals:
@@ -352,7 +476,7 @@ TagManager() {
 #
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
-FindManager() {
+FindGenerator() {
     local command
     local find_command
     local directory_exclude directory_exclude_default=() _directory_exclude
@@ -485,18 +609,16 @@ if [ -t 0 ]; then
             done
         ;;
         *)
-            Validate minimal-arguments 1 $# "Tag(s) not defined."
-            Validate minimal-arguments 2 $# "File not defined."
-            last_argument=${@:$#:1}
-            files_arguments+=("$last_argument");
-            while [[ $# -gt 1 ]]; do
+            Validate minimal-arguments 1 $# "File not defined."
+            Validate minimal-arguments 2 $# "Tag(s) not defined."
+            files_arguments+=("$1");
+            shift
+            while [[ $# -gt 0 ]]; do
                 case "$1" in
                     *) tags_arguments+=("$1")
                     shift
                 esac
             done
-            # Delete the last argument.
-            shift
     esac
 else
     # Jika dari standard input.
@@ -531,22 +653,21 @@ else
                 esac
             done
             Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
-            # Delete the last argument.
-            shift
     esac
-
 fi
 
+ArrayUnique tags_arguments[@]
+tags_arguments=("${_return[@]}")
+
 case $command in
-    find|f) FindManager ;;
+    find|f) FindGenerator ;;
     *) set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
             PathInfo "$1"
             if [ -d "$full_path" ];then
-                # Todo.
-                echo -n
+                TagDirectory
             elif [ -f "$full_path" ];then
-                TagManager
+                TagFile
             else
                 Error "File not found: ${basename}."
             fi

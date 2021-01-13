@@ -11,8 +11,8 @@
 Usage() {
     cat <<- 'EOF'
 Usage:
-   tag add|a [-n] [-d <n>] <tag> [<tag>]... <file|STDIN>
-   tag delete|d [-n] [-d <n>] <tag> [<tag>]... <file|STDIN>
+   tag add|a [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
    tag clear|c [-n] [-d <n>] <file|STDIN> [<file>]...
    tag find|f [-1aiwp] [-x <n>] <tag> [<tag>]...
 
@@ -42,10 +42,10 @@ Available Commands
    find       Find tag by text or word (Alias: f)
 
 Format Command
-   Add:       tag add|a <tag> [<tag>]... <file|STDIN>
-   Delete:    tag delete|d <tag> [<tag>]... <file|STDIN>
-   Clear:     tag clear|c <file|STDIN> [<file>]...
-   Find:      tag find|f <tag> [<tag>]...
+   tag add|a [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d [-n] [-d <n>] <file|STDIN> <tag> [<tag>]...
+   tag clear|c [-n] [-d <n>] <file|STDIN> [<file>]...
+   tag find|f [-1aiwp] [-x <n>] <tag> [<tag>]...
 
 Options for Add, Delete, and Clear command
    -n, --dry-run
@@ -212,23 +212,19 @@ TagFile() {
     tagInfo "$filename"
     case $command in
         add|a)
-            if [[ "${#tags_arguments[@]}" -gt 0 ]];then
-                tags_new=("${tags[@]}" "${tags_arguments[@]}")
-                tags_new_filtered=($(echo "${tags_new[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-                tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
-                basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
-            fi
+            tags_new=("${tags[@]}" "${tags_arguments[@]}")
+            tags_new_filtered=($(echo "${tags_new[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+            tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
+            basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
         ;;
         delete|d)
-            if [[ "${#tags_arguments[@]}" -gt 0 ]];then
-                ArrayDiff tags[@] tags_arguments[@]
-                tags_new=("${_return[@]}")
-                tags_new_stringify=$(printf %s "$f" "${tags_new[@]/#/ }" | cut -c2-)
-                if [[ ! "$tags_new_stringify" == "" ]];then
-                    basename_new="${filename}[${tags_new_stringify}].$extension"
-                else
-                    basename_new="${filename}.$extension"
-                fi
+            ArrayDiff tags[@] tags_arguments[@]
+            tags_new=("${_return[@]}")
+            tags_new_stringify=$(printf %s "$f" "${tags_new[@]/#/ }" | cut -c2-)
+            if [[ ! "$tags_new_stringify" == "" ]];then
+                basename_new="${filename}[${tags_new_stringify}].$extension"
+            else
+                basename_new="${filename}.$extension"
             fi
         ;;
         clear|c)
@@ -250,7 +246,97 @@ TagFile() {
 }
 
 TagDirectory() {
+    local e tags
     echo -n
+    VarDump full_path dirname basename filename extension PWD
+
+    # Rebuild PathInfo()
+    dirname="$full_path"
+    full_path="${dirname}/.tag"
+    basename=""
+    filename=""
+    extension="tag"
+
+    VarDump ----
+    VarDump full_path dirname basename filename extension PWD
+    VarDump tags_arguments
+    tagInfo() {
+        if [ -f "$1" ];then
+            while IFS="" read -r p || [ -n "$p" ]
+            do
+              tags+=("$(printf '%s\n' "$p")")
+            done < "$1"
+        fi
+    }
+
+    tagInfo "$full_path"
+
+    case $command in
+        add|a)
+            ArrayDiff tags_arguments[@] tags[@]
+            tags_new=("${_return[@]}")
+            VarDump tags_new
+            if [[ ${#tags_new[@]} -gt 0 ]];then
+                if [[ $dry_run == 1 ]];then
+                    string=$(<"$full_path")
+                    echo "$string"
+                    for e in "${tags_new[@]}"; do
+                        string="${string}"$'\n'"$e"
+                    done
+                    echo "$string"
+                else
+                    # Add EOL in end of file.
+                    # https://unix.stackexchange.com/a/161853
+                    if [ -f "$full_path" ];then
+                        tail -c1 < "$full_path"  | read -r _ || echo >> "$full_path"
+                    fi
+                    for e in "${tags_new[@]}"; do
+                        echo "$e" >> "$full_path"
+                    done
+                    cat "$full_path"
+                fi
+            fi
+        ;;
+        delete|d)
+            if [ -f "$full_path" ];then
+                ArrayDiff tags[@] tags_arguments[@]
+                if [[ ! ${#tags[@]} == ${#_return[@]} ]];then
+                    if [[ $dry_run == 1 ]];then
+                        echo -n
+                        string=$(<"$full_path")
+                        echo "$string"
+                        for e in "${tags_arguments[@]}"; do
+                            # sed -i "/^${e}$/d" "$full_path"
+                            string=$(echo "$string"| sed  "/^${e}$/d")
+                        done
+                        echo "$string"
+                    else
+                        for e in "${tags_arguments[@]}"; do
+                            sed -i "/^${e}$/d" "$full_path"
+                        done
+                        cat "$full_path"
+                    fi
+                fi
+            fi
+        ;;
+        clear|c)
+            if [ -f "$full_path" ];then
+                cat "$full_path" >&2
+                echo -ne "\e[93m"
+                read -rsn1 -p 'File .tag will be delete. Are you sure [y/n]: ' option
+                echo -ne "\e[39m"
+                if [[ $option == y ]];then
+                    if [[ ! $dry_run == 1 ]];then
+                        rm "$full_path" && echo Deleted.
+                    else
+                        echo Deleted.
+                    fi
+                else
+                    echo Canceled.
+                fi
+            fi
+    esac
+
 }
 
 # Generator find command dan mengekseskusinya (optional).

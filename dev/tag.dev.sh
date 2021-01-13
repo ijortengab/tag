@@ -5,6 +5,7 @@ source $(dirname $0)/bash/functions/var-dump/dev/var-dump.function.sh
 source $(dirname $0)/tag.debug.sh
 
 source $(dirname $0)/bash/functions/array-diff/dev/array-diff.function.sh
+source $(dirname $0)/bash/functions/array-unique/dev/array-unique.function.sh
 
 source $(dirname $0)/tag.functions.sh
 
@@ -54,18 +55,16 @@ if [ -t 0 ]; then
             done
         ;;
         *)
-            Validate minimal-arguments 1 $# "Tag(s) not defined."
-            Validate minimal-arguments 2 $# "File not defined."
-            last_argument=${@:$#:1}
-            files_arguments+=("$last_argument");
-            while [[ $# -gt 1 ]]; do
+            Validate minimal-arguments 1 $# "File not defined."
+            Validate minimal-arguments 2 $# "Tag(s) not defined."
+            files_arguments+=("$1");
+            shift
+            while [[ $# -gt 0 ]]; do
                 case "$1" in
                     *) tags_arguments+=("$1")
                     shift
                 esac
             done
-            # Delete the last argument.
-            shift
     esac
 else
     # Jika dari standard input.
@@ -100,11 +99,13 @@ else
                 esac
             done
             Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
-            # Delete the last argument.
-            shift
     esac
 fi
-# VarDump files_arguments tags_arguments
+
+VarDump files_arguments tags_arguments
+ArrayUnique tags_arguments[@]
+tags_arguments=("${_return[@]}")
+VarDump files_arguments tags_arguments
 
 case $command in
     find|f) FindGenerator ;;
