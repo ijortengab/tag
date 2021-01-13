@@ -106,16 +106,24 @@ VarDump files_arguments tags_arguments
 ArrayUnique tags_arguments[@]
 tags_arguments=("${_return[@]}")
 VarDump files_arguments tags_arguments
+VarDump filter
+
+case $filter in
+    f) process_file=1; process_dir=0 ;;
+    d) process_file=0; process_dir=1 ;;
+    *) process_file=1; process_dir=1 ;;
+esac
+VarDump process_file process_dir
 
 case $command in
     find|f) FindGenerator ;;
-    *) set -- "${files_arguments[@]}"
+    *)  set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
             PathInfo "$1"
-            if [ -d "$full_path" ];then
-                TagDirectory
-            elif [ -f "$full_path" ];then
+            if [ -f "$full_path" && $process_file == 1 ];then
                 TagFile
+            elif [ -d "$full_path" && $process_dir == 1 ];then
+                TagDirectory
             else
                 Error "File not found: ${basename}."
             fi

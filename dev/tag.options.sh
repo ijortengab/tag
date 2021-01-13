@@ -17,7 +17,13 @@ MULTIVALUE=(
 )
 VALUE=(
     # Add/Delete/Clear Options:
-        '--directory|-d'
+        '--directory|-D'
+        '--tag-file|-t'
+)
+CSV=(
+    'short:-f,parameter:filter,flag_option:true=f'
+    'short:-d,parameter:filter,flag_option:true=d'
+    'long:--type,parameter:filter,type:value'
 )
 source $(dirname $0)/bash/functions/code-generator-parse-options/dev/code-generator-parse-options.function.sh
 

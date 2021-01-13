@@ -11,14 +11,18 @@ echo ${yellow}'# Options'${normal}
 echo
 echo    ${red}-h, --help${normal}" ....... "${cyan}\$help${normal}" ....... = "${magenta}$help${normal}
 echo    ${red}-1${normal}" ............... "${cyan}\$_1${normal}" ......... = "${magenta}$_1${normal}
+echo    ${red}-d${normal}" ............... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
+echo    ${red}-f${normal}" ............... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
 echo    ${red}-a, --all${normal}" ........ "${cyan}\$all${normal}" ........ = "${magenta}$all${normal}
-echo    ${red}-d, --directory${normal}"    "${cyan}\$directory${normal}"    = "${magenta}$directory${normal}
+echo    ${red}-D, --directory${normal}"    "${cyan}\$directory${normal}"    = "${magenta}$directory${normal}
 echo    ${red}-n, --dry-run${normal}" .... "${cyan}\$dry_run${normal}" .... = "${magenta}$dry_run${normal}
 echo -n ${red}-x, --exclude-dir${normal}"  "${cyan}\$exclude_dir${normal}"  = ""( "
 for _e_ in "${exclude_dir[@]}"; do if [[ $_e_ =~ " " ]];then echo -n \"${magenta}"$_e_"${normal}\"" ";else echo -n ${magenta}"$_e_"${normal}" ";fi;done
 echo ")"
 echo    ${red}-i, --ignore-case${normal}"  "${cyan}\$ignore_case${normal}"  = "${magenta}$ignore_case${normal}
 echo    ${red}-p, --preview${normal}" .... "${cyan}\$preview${normal}" .... = "${magenta}$preview${normal}
+echo    ${red}--type${normal}" ........... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
+echo    ${red}-t, --tag-file${normal}" ... "${cyan}\$tag_file${normal}" ... = "${magenta}$tag_file${normal}
 echo    ${red}-w, --word${normal}" ....... "${cyan}\$word${normal}" ....... = "${magenta}$word${normal}
 
 echo
