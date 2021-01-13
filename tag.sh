@@ -413,9 +413,8 @@ TagFile() {
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
 TagDirectory() {
-    local e option tags tags_new
-    local full_path dirname basename filename extension PWD
-    local tag_file
+    local e option
+    local tags tags_new
 
     # Rebuild PathInfo()
     dirname="$full_path"
@@ -743,9 +742,9 @@ case $command in
     *)  set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
             PathInfo "$1"
-            if [ -f "$full_path" && $process_file == 1 ];then
+            if [[ -f "$full_path" && $process_file == 1 ]];then
                 TagFile
-            elif [ -d "$full_path" && $process_dir == 1 ];then
+            elif [[ -d "$full_path" && $process_dir == 1 ]];then
                 TagDirectory
             else
                 Error "File not found: ${basename}."

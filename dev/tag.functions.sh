@@ -276,9 +276,8 @@ TagFile() {
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
 TagDirectory() {
-    local e option tags tags_new
-    local full_path dirname basename filename extension PWD
-    local tag_file
+    local e option
+    local tags tags_new
 
     # Rebuild PathInfo()
     dirname="$full_path"

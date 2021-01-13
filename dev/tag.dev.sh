@@ -120,9 +120,9 @@ case $command in
     *)  set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
             PathInfo "$1"
-            if [ -f "$full_path" && $process_file == 1 ];then
+            if [[ -f "$full_path" && $process_file == 1 ]];then
                 TagFile
-            elif [ -d "$full_path" && $process_dir == 1 ];then
+            elif [[ -d "$full_path" && $process_dir == 1 ]];then
                 TagDirectory
             else
                 Error "File not found: ${basename}."
