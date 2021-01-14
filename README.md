@@ -61,7 +61,18 @@ ls IMG-20201201-171501* | tag add hiking
 ls IMG-20201201-171501* | tag add hiking gede-mountain
 # Press UP ARROW in keyboard
 ls IMG-20201201-171501* | tag add hiking gede-mountain trip-2015
-# File renamed from `IMG-20201201-171501.jpg` to `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg`
+# File renamed
+# from `IMG-20201201-171501.jpg`
+# to   `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg`
+```
+
+5. Bulk rename tag in filename.
+
+```
+tag find hiking -w -f | tag delete hiking | tag add adventure
+# File renamed
+# from `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg`
+# to   `IMG-20201201-171501[adventure gede-mountain trip-2015].jpg`
 ```
 
 ## Documentation
