@@ -16,11 +16,13 @@ MULTIVALUE=(
         '--exclude-dir|-x'
 )
 VALUE=(
+    # Global Options:
+        '--tag-file|-t'
     # Add/Delete/Clear Options:
         '--directory|-D'
-        '--tag-file|-t'
 )
 CSV=(
+    # Global Options:
     'short:-f,parameter:filter,flag_option:true=f'
     'short:-d,parameter:filter,flag_option:true=d'
     'long:--type,parameter:filter,type:value'

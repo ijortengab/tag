@@ -5,6 +5,7 @@ source $(dirname $0)/bash/functions/var-dump/dev/var-dump.function.sh
 source $(dirname $0)/tag.debug.sh
 
 source $(dirname $0)/bash/functions/array-diff/dev/array-diff.function.sh
+
 source $(dirname $0)/bash/functions/array-unique/dev/array-unique.function.sh
 
 source $(dirname $0)/tag.functions.sh

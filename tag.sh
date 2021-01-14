@@ -100,6 +100,7 @@ ArrayDiff() {
         _return=("${source[@]}")
     fi
 }
+
 # Removes duplicate values from an array.
 #
 # Globals:
@@ -313,7 +314,7 @@ PathInfo() {
 #
 # Globals:
 #   Used: full_path, dirname, basename, extension, filename
-#         dry_run
+#         dry_run, tags_arguments
 #
 # Arguments:
 #   None
@@ -362,9 +363,11 @@ TagFile() {
     }
 
     tagInfo "$filename"
+
     case $command in
         add|a)
             tags_new=("${tags[@]}" "${tags_arguments[@]}")
+            # Alternative ArrayUnique.
             tags_new_filtered=($(echo "${tags_new[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
             tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
             basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
@@ -400,7 +403,7 @@ TagFile() {
 # Modifikasi tags terhadap directory.
 #
 # Globals:
-#   Used: full_path, tag_file, dry_run
+#   Used: full_path, tag_file, dry_run, tags_arguments
 #   Modified: full_path, dirname, basename, extension, filename
 #
 #
@@ -413,7 +416,7 @@ TagFile() {
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
 TagDirectory() {
-    local e option
+    local e option string
     local tags tags_new
 
     # Rebuild PathInfo()
@@ -502,7 +505,7 @@ TagDirectory() {
 # Generator find command dan mengekseskusinya (optional).
 #
 # Globals:
-#   Used: tags_arguments,
+#   Used: tags_arguments, process_file, process_dir
 #         _1, all, ignore_case, preview, word, exclude_dir
 #
 # Arguments:

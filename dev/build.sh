@@ -1,12 +1,12 @@
 #!/bin/bash
 # Create minified version.
 chmod +x tag.options.sh
-. tag.options.sh --no-hash-bang --compact --clean --output-file tag.parse_options.min.txt
+. tag.options.sh
 # Replace line.
 touch ../tag.sh
 chmod +x ../tag.sh
 SOURCE=$(<tag.dev.sh)
-FILE_PARSE_OPTIONS=$(<tag.parse_options.min.txt)
+FILE_PARSE_OPTIONS=$(<tag.parse_options.sh)
 FILE_FUNCTIONS=$(<tag.functions.sh)
 FILE_ARRAY_DIFF=$(<bash/functions/array-diff/dev/array-diff.function.sh)
 FILE_ARRAY_UNIQUE=$(<bash/functions/array-unique/dev/array-unique.function.sh)
