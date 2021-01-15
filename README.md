@@ -1,6 +1,6 @@
 # Tag
 
-Tag is Command Line Interface tools to add or modify `tag` or `label` in filename.
+Tag is Command Line Interface tools to add or modify `tag` ( or `label`) in filename and directory.
 
 Inspired from [TagSpaces](https://www.tagspaces.org/).
 
@@ -18,11 +18,13 @@ or wget.
 wget https://git.io/tag.sh -qO tag
 ```
 
-Save file as `tag` name, then put in your $PATH.
+Save file as `tag` name, then put in your $PATH variable.
 
 ```
 chmod +x tag
 sudo mv tag -t /usr/local/bin
+# or
+[ -d ~/bin ] && mv tag -t ~/bin
 ```
 
 Verify.
@@ -33,12 +35,13 @@ which tag
 
 ## Getting started
 
-1. Add `favourite` and `live` tag in `Padi - Harmoni Live Cover by Mitty Zasia-pJTGy0P6hwg.mp4` file.
+1. Add `love` and `rock` tag in `November Rain.mp3` file.
 
 ```
-tag add favourite live 'Padi - Harmoni Live Cover by Mitty Zasia-pJTGy0P6hwg.mp4'
-# File renamed to `Padi - Harmoni Live Cover by Mitty Zasia-pJTGy0P6hwg[favourite live].mp4`
+tag add love rock 'November Rain.mp3'
 ```
+
+File renamed to `November Rain[love rock].mp3`
 
 2. Add `trip-Bali-2021` tag to all JPEG files in Your Photos directory.
 
@@ -61,19 +64,17 @@ ls IMG-20201201-171501* | tag add hiking
 ls IMG-20201201-171501* | tag add hiking gede-mountain
 # Press UP ARROW in keyboard
 ls IMG-20201201-171501* | tag add hiking gede-mountain trip-2015
-# File renamed
-# from `IMG-20201201-171501.jpg`
-# to   `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg`
 ```
+
+File renamed from `IMG-20201201-171501.jpg` to `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg`
 
 5. Bulk rename tag in filename.
 
 ```
 tag find hiking -w -f | tag delete hiking | tag add adventure
-# File renamed
-# from `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg`
-# to   `IMG-20201201-171501[adventure gede-mountain trip-2015].jpg`
 ```
+
+File renamed from `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg` to `IMG-20201201-171501[adventure gede-mountain trip-2015].jpg`
 
 ## Documentation
 
@@ -122,20 +123,39 @@ Options for Find command
         Ignore case distinctions.
    -w, --word
         Find tag by word. Default is find tag by containing text
+        Attention. For example: `-w fair`, then:
+         - match for `fair` tag
+         - match for `fair-play` tag
+         - not match for `fairness` tag
    -p, --preview
         Preview find command without execute it
    -x, --exclude-dir=<dir>
         Skip directory and all files inside them. Repeat option to skip other
         directory
 
-Tagging directory.
-   - Tag the directory doesn't rename the directory name.
-   - Tag the directory will create a `.tag` file inside the directory and put
-     the tags inside that file. The extension `.tag` cannot be changed but you
-     can add filename with `--tag-file` option.
-
 Example
    tag add "November Rain.mp3" love rock
+   ls ~/Photos/*.jpg | tag add trip-Bali-2021
+   ls ~/Photos/event/ | tag add hiking -D ~/Photos/event/
+   ls IMG-20201201-171501* | tag add hiking
+   ls IMG-20201201-171501* | tag add hiking gede-mountain
+   ls IMG-20201201-171501* | tag add hiking gede-mountain trip-2015
+   tag find hiking -w -f | tag delete hiking | tag add adventure
+
+Tagging directory
+   - Tag the directory doesn't rename the directory name.
+   - Tag the directory will create a `.tag` file inside the directory and put
+     the tags inside that file.
+   - Extension `.tag` cannot be changed but you can add filename with
+    `--tag-file` option or include that file in path.
+   - Adding tag directory is like append a word in the `.tag` file.
+     (equals with `echo word >> .tag`)
+   - Deleting tag directory is affect only if the line in `.tag` file only
+     contains the word tag (regex pattern: /^word$/).
+   - Clear tag directory is means to remove the `.tag` file.
+
+Example
    tag add . work todo
-   ls *.jpg | tag add trip 2021
+   tag add ~/Photos --tag-file=.metadata   event trip
+   tag add ~/Photos/.metadata.tag          event trip
 ```

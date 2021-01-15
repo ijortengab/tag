@@ -213,22 +213,41 @@ Options for Find command
         Ignore case distinctions.
    -w, --word
         Find tag by word. Default is find tag by containing text
+        Attention. For example: `-w fair`, then:
+         - match for `fair` tag
+         - match for `fair-play` tag
+         - not match for `fairness` tag
    -p, --preview
         Preview find command without execute it
    -x, --exclude-dir=<dir>
         Skip directory and all files inside them. Repeat option to skip other
         directory
 
-Tagging directory.
-   - Tag the directory doesn't rename the directory name.
-   - Tag the directory will create a `.tag` file inside the directory and put
-     the tags inside that file. The extension `.tag` cannot be changed but you
-     can add filename with `--tag-file` option.
-
 Example
    tag add "November Rain.mp3" love rock
+   ls ~/Photos/*.jpg | tag add trip-Bali-2021
+   ls ~/Photos/event/ | tag add hiking -D ~/Photos/event/
+   ls IMG-20201201-171501* | tag add hiking
+   ls IMG-20201201-171501* | tag add hiking gede-mountain
+   ls IMG-20201201-171501* | tag add hiking gede-mountain trip-2015
+   tag find hiking -w -f | tag delete hiking | tag add adventure
+
+Tagging directory
+   - Tag the directory doesn't rename the directory name.
+   - Tag the directory will create a `.tag` file inside the directory and put
+     the tags inside that file.
+   - Extension `.tag` cannot be changed but you can add filename with
+    `--tag-file` option or include that file in path.
+   - Adding tag directory is like append a word in the `.tag` file.
+     (equals with `echo word >> .tag`)
+   - Deleting tag directory is affect only if the line in `.tag` file only
+     contains the word tag (regex pattern: /^word$/).
+   - Clear tag directory is means to remove the `.tag` file.
+
+Example
    tag add . work todo
-   ls *.jpg | tag add trip 2021
+   tag add ~/Photos --tag-file=.metadata   event trip
+   tag add ~/Photos/.metadata.tag          event trip
 
 EOF
 }
@@ -294,20 +313,41 @@ Validate() {
 #
 # Returns:
 #   None
-PathInfo() {
-    if [[ ! $directory == '' ]];then
-        if [[ $directory =~ \/$ ]];then
-            full_path="$directory$1"
-        else
-            full_path="${directory}/$1"
-        fi
-    else
-        full_path=$(realpath "$1")
-    fi
-    dirname=$(dirname "$full_path")
-    basename=$(basename -- "$full_path")
-    extension="${basename##*.}"
-    filename="${basename%.*}"
+PathModify () {
+    case $1 in
+        clear) full_path=; dirname=; basename=; filename=; extension= ;;
+        full-path)
+            if [[ ! $directory == '' ]];then
+                if [[ $directory =~ \/$ ]];then
+                    full_path="$directory$2"
+                else
+                    full_path="${directory}/$2"
+                fi
+            else
+                full_path=$(realpath "$2")
+            fi
+        ;;
+        dot-tag)
+            full_path="${dirname}"
+            tag_file="${filename}"
+            dirname=$(dirname "$full_path")
+            basename=
+            filename=
+            extension=
+        ;;
+        regular-file)
+            dirname=$(dirname "$full_path")
+            basename=$(basename -- "$full_path")
+            extension="${basename##*.}"
+            filename="${basename%.*}"
+        ;;
+        tag-directory)
+            dirname="$full_path"
+            full_path="${dirname}/${tag_file}.tag"
+            basename="${tag_file}.tag"
+            filename="${tag_file}"
+            extension="tag"
+    esac
 }
 
 # Modifikasi tags terhadap file.
@@ -419,13 +459,6 @@ TagDirectory() {
     local e option string
     local tags tags_new
 
-    # Rebuild PathInfo()
-    dirname="$full_path"
-    full_path="${dirname}/${tag_file}.tag"
-    basename="${tag_file}.tag"
-    filename="${tag_file}"
-    extension="tag"
-
     tagInfo() {
         if [ -f "$1" ];then
             while IFS="" read -r p || [ -n "$p" ]
@@ -436,7 +469,6 @@ TagDirectory() {
     }
 
     tagInfo "$full_path"
-
     case $command in
         add|a)
             ArrayDiff tags_arguments[@] tags[@]
@@ -444,11 +476,11 @@ TagDirectory() {
             if [[ ${#tags_new[@]} -gt 0 ]];then
                 if [[ $dry_run == 1 ]];then
                     string=$(<"$full_path")
-                    echo "$string"
                     for e in "${tags_new[@]}"; do
                         string="${string}"$'\n'"$e"
                     done
-                    echo "$string"
+                    # echo "$string"
+                    echo "$full_path"
                 else
                     # Add EOL in end of file.
                     # https://unix.stackexchange.com/a/161853
@@ -458,7 +490,8 @@ TagDirectory() {
                     for e in "${tags_new[@]}"; do
                         echo "$e" >> "$full_path"
                     done
-                    cat "$full_path"
+                    # cat "$full_path"
+                    echo "$full_path"
                 fi
             fi
         ;;
@@ -468,16 +501,17 @@ TagDirectory() {
                 if [[ ! ${#tags[@]} == ${#_return[@]} ]];then
                     if [[ $dry_run == 1 ]];then
                         string=$(<"$full_path")
-                        echo "$string"
                         for e in "${tags_arguments[@]}"; do
                             string=$(echo "$string"| sed  "/^${e}$/d")
                         done
-                        echo "$string"
+                        # echo "$string"
+                        echo "$full_path"
                     else
                         for e in "${tags_arguments[@]}"; do
                             sed -i "/^${e}$/d" "$full_path"
                         done
-                        cat "$full_path"
+                        # cat "$full_path"
+                        echo "$full_path"
                     fi
                 fi
             fi
@@ -744,10 +778,18 @@ case $command in
     find|f) FindGenerator ;;
     *)  set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
-            PathInfo "$1"
+            PathModify clear
+            PathModify full-path "$1"
+            if [ -f "$full_path" ];then
+                PathModify regular-file
+            fi
+            if [[ $extension == 'tag' ]];then
+                PathModify dot-tag
+            fi
             if [[ -f "$full_path" && $process_file == 1 ]];then
                 TagFile
             elif [[ -d "$full_path" && $process_dir == 1 ]];then
+                PathModify tag-directory
                 TagDirectory
             else
                 Error "File not found: ${basename}."

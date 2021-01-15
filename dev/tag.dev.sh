@@ -120,10 +120,21 @@ case $command in
     find|f) FindGenerator ;;
     *)  set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
-            PathInfo "$1"
+            VarDump full_path dirname basename filename extension PWD
+            PathModify clear
+            PathModify full-path "$1"
+            if [ -f "$full_path" ];then
+                PathModify regular-file
+            fi
+            VarDump full_path dirname basename filename extension PWD
+            if [[ $extension == 'tag' ]];then
+                PathModify dot-tag
+            fi
+            VarDump full_path dirname basename filename extension PWD
             if [[ -f "$full_path" && $process_file == 1 ]];then
                 TagFile
             elif [[ -d "$full_path" && $process_dir == 1 ]];then
+                PathModify tag-directory
                 TagDirectory
             else
                 Error "File not found: ${basename}."
