@@ -31,6 +31,7 @@ case $command in
     delete|d) shift ;;
     clear|c) shift ;;
     find|f) shift ;;
+    list|l) shift ;;
     *) Die "Command unknown. Type --help for more info."
 esac
 
@@ -46,7 +47,7 @@ if [ -t 0 ]; then
                 esac
             done
         ;;
-        clear|c)
+        clear|c|list|l)
             Validate minimal-arguments 1 $# "File not defined."
             while [[ $# -gt 0 ]]; do
                 case "$1" in
@@ -82,7 +83,7 @@ else
             done
             Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
         ;;
-        clear|c)
+        clear|c|list|l)
             while [[ $# -gt 0 ]]; do
                 case "$1" in
                     *) files_arguments+=("$1")
@@ -137,7 +138,7 @@ case $command in
                 PathModify tag-directory
                 TagDirectory
             else
-                Error "File not found: ${basename}."
+                Error "File not found: ${full_path}"
             fi
             shift
         done

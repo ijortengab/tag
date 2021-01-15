@@ -88,12 +88,14 @@ Available Commands
    delete     Delete tag(s) from the file (Alias: d)
    clear      Clear all the tag(s) from the file (Alias: c)
    find       Find tag by text or word (Alias: f)
+   list       List all tag from the file (Alias: f)
 
 Format Command
-   tag add|a    [-nfd]   [-D <n>] <file|STDIN> <tag> [<tag>]...
-   tag delete|d [-nfd]   [-D <n>] <file|STDIN> <tag> [<tag>]...
-   tag clear|c  [-nfd]   [-D <n>] <file|STDIN> [<file>]...
+   tag add|a    [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
+   tag clear|c  [-nfd]   [-D <n>] [-t <n>] <file|STDIN> [<file>]...
    tag find|f   [-1aiwp] [-x <n>]... <tag> [<tag>]...
+   tag list|l   [-fd]    [-D <n>] <file|STDIN> [<file>]...
 
 Global options
    -h, --help
@@ -105,14 +107,17 @@ Global options
         Only processes directories, even though there is regular file in
         arguments
 
-Options for Add, Delete, and Clear command
+Options per Command.
    -n, --dry-run
         Perform a trial run with no changes made
+        Available for `add`, `delete`, and `clear` command.
    -D, --directory
         Set the directory if file argument is not relative to $PWD.
+        Available for `add`, `delete`, `clear`, and `list` command.
    -t, --tag-file=<n>
-        Set filename for Tagging Directory. The extension `.tag` must not
+        Set filename for Tagging Directory only. The extension `.tag` must not
         contains in argument, because it always added.
+        Available for `add`, `delete`, and `clear` command.
 
 Options for Find command
    -1   Find in starting point directory level depth only and no recursive.
@@ -148,11 +153,6 @@ Tagging directory
      the tags inside that file.
    - Extension `.tag` cannot be changed but you can add filename with
     `--tag-file` option or include that file in path.
-   - Adding tag directory is like append a word in the `.tag` file.
-     (equals with `echo word >> .tag`)
-   - Deleting tag directory is affect only if the line in `.tag` file only
-     contains the word tag (regex pattern: /^word$/).
-   - Clear tag directory is means to remove the `.tag` file.
 
 Example
    tag add . work todo

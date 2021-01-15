@@ -19,5 +19,11 @@ echo "${SOURCE}" > ../tag.sh
 sed -i '/var-dump\.function\.sh/d' ../tag.sh
 sed -i '/tag\.debug\.sh/d' ../tag.sh
 sed -i '/VarDump/d' ../tag.sh
+# Readme
+source $(dirname $0)/tag.functions.sh
+SOURCE=$(<README.dev.md)
+HELP=`Help`
+SOURCE="${SOURCE//\{\{HELP\}\}/$HELP}"
+echo "${SOURCE}" > ../README.md
 # Add to $PATH
 cp -r ../tag.sh ~/bin/tag
