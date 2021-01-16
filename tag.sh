@@ -676,6 +676,7 @@ FindGenerator() {
         # execute command ini menggunakan bash
         echo "$command" | bash
     fi
+    return 0
 }
 
 # Variable.
