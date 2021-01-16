@@ -100,6 +100,8 @@ Format Command
 Global options
    -h, --help
         Print this help
+   --version
+        Print current version
    -f, --type f
         Only processes regular files, even though there is directory in
         arguments

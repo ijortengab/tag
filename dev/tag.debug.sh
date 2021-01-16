@@ -10,6 +10,7 @@ echo
 echo ${yellow}'# Options'${normal}
 echo
 echo    ${red}-h, --help${normal}" ....... "${cyan}\$help${normal}" ....... = "${magenta}$help${normal}
+echo    ${red}--version${normal}" ........ "${cyan}\$version${normal}" .... = "${magenta}$version${normal}
 echo    ${red}-1${normal}" ............... "${cyan}\$_1${normal}" ......... = "${magenta}$_1${normal}
 echo    ${red}-d${normal}" ............... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
 echo    ${red}-f${normal}" ............... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}

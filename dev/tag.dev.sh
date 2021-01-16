@@ -17,7 +17,12 @@ tags_arguments=()
 
 if [[ $help == 1 ]];then
     Help
-    exit 1
+    exit
+fi
+
+if [[ $version == 1 ]];then
+    Version
+    exit
 fi
 
 if [[ $1 == '' ]];then
@@ -32,7 +37,7 @@ case $command in
     clear|c) shift ;;
     find|f) shift ;;
     list|l) shift ;;
-    *) Die "Command unknown. Type --help for more info."
+    *) Die "Command '$1' unknown. Type --help for more info."
 esac
 
 if [ -t 0 ]; then

@@ -2,6 +2,7 @@
 FLAG=(
     # Global Options:
         '--help|-h'
+        '--version'
     # Find Options:
         '--preview|-p'
         '--all|-a'

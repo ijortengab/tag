@@ -9,6 +9,7 @@ else
     echo Command tag tidak ditemukan.
     exit
 fi
+# Directory.
 mkdir -p temporary
 cd temporary
 

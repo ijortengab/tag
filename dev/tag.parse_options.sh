@@ -3,6 +3,7 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --help|-h) help=1; shift ;;
+        --version) version=1; shift ;;
         -1) _1=1; shift ;;
         -d) filter=d; shift ;;
         -f) filter=f; shift ;;
