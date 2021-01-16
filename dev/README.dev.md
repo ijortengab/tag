@@ -9,13 +9,13 @@ Inspired from [TagSpaces](https://www.tagspaces.org/).
 Download with curl.
 
 ```
-curl https://git.io/tag.sh -Lso tag
+curl -L https://git.io/tag.sh -o tag
 ```
 
 or wget.
 
 ```
-wget https://git.io/tag.sh -qO tag
+wget https://git.io/tag.sh -O tag
 ```
 
 Save file as `tag` name, then put in your $PATH variable.

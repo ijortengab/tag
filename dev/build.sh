@@ -26,4 +26,4 @@ HELP=`Help`
 SOURCE="${SOURCE//\{\{HELP\}\}/$HELP}"
 echo "${SOURCE}" > ../README.md
 # Add to $PATH
-cp -r ../tag.sh ~/bin/tag
+[ -d ~/bin ] && cp -r ../tag.sh ~/bin/tag
