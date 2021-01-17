@@ -331,7 +331,12 @@ TagFile() {
             output="$full_path"
         fi
     fi
-    echo "$output"
+    case $command in
+        add|a) echo "$output" ;;
+        replace|r) echo "$output" ;;
+        delete|d) echo "$output" ;;
+        empty|e) echo "$output" ;;
+    esac
 }
 
 # Modifikasi tags terhadap directory.
