@@ -34,7 +34,7 @@ command="$1";
 case $command in
     add|a) shift ;;
     delete|d) shift ;;
-    clear|c) shift ;;
+    empty|e) shift ;;
     find|f) shift ;;
     list|l) shift ;;
     *) Die "Command '$1' unknown. Type --help for more info."
@@ -52,7 +52,7 @@ if [ -t 0 ]; then
                 esac
             done
         ;;
-        clear|c|list|l)
+        empty|e|list|l)
             Validate minimal-arguments 1 $# "File not defined."
             while [[ $# -gt 0 ]]; do
                 case "$1" in
@@ -88,7 +88,7 @@ else
             done
             Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
         ;;
-        clear|c|list|l)
+        empty|e|list|l)
             while [[ $# -gt 0 ]]; do
                 case "$1" in
                     *) files_arguments+=("$1")

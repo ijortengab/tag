@@ -188,14 +188,14 @@ Usage: tag <command> [arguments|STDIN]
 Available Commands
    add        Add tag(s) to the file (Alias: a)
    delete     Delete tag(s) from the file (Alias: d)
-   clear      Clear all the tag(s) from the file (Alias: c)
+   empty      Empty all tag(s) from the file (Alias: e)
    find       Find tag by text or word (Alias: f)
    list       List all tag from the file (Alias: f)
 
 Format Command
    tag add|a    [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
    tag delete|d [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
-   tag clear|c  [-nfd]   [-D <n>] [-t <n>] <file|STDIN> [<file>]...
+   tag empty|e  [-nfd]   [-D <n>] [-t <n>] <file|STDIN> [<file>]...
    tag find|f   [-1aiwp] [-x <n>]... <tag> [<tag>]...
    tag list|l   [-fd]    [-D <n>] <file|STDIN> [<file>]...
 
@@ -214,14 +214,14 @@ Global options
 Options per Command.
    -n, --dry-run
         Perform a trial run with no changes made
-        Available for `add`, `delete`, and `clear` command.
+        Available for `add`, `delete`, and `empty` command.
    -D, --directory
         Set the directory if file argument is not relative to $PWD.
-        Available for `add`, `delete`, `clear`, and `list` command.
+        Available for `add`, `delete`, `empty`, and `list` command.
    -t, --tag-file=<n>
         Set filename for Tagging Directory only. The extension `.tag` must not
         contains in argument, because it always added.
-        Available for `add`, `delete`, and `clear` command.
+        Available for `add`, `delete`, and `empty` command.
 
 Options for Find command
    -1   Find in starting point directory level depth only and no recursive.
@@ -436,7 +436,7 @@ TagFile() {
                 basename_new="${filename}.$extension"
             fi
         ;;
-        clear|c)
+        empty|e)
             basename_new="${filename}.$extension"
         ;;
         list|l)
@@ -540,7 +540,7 @@ TagDirectory() {
             fi
             echo "$full_path"
         ;;
-        clear|c)
+        empty|e)
             if [ -f "$full_path" ];then
                 if [[ ! $dry_run == 1 ]];then
                     for e in "${tags[@]}"; do
@@ -721,7 +721,7 @@ command="$1";
 case $command in
     add|a) shift ;;
     delete|d) shift ;;
-    clear|c) shift ;;
+    empty|e) shift ;;
     find|f) shift ;;
     list|l) shift ;;
     *) Die "Command '$1' unknown. Type --help for more info."
@@ -739,7 +739,7 @@ if [ -t 0 ]; then
                 esac
             done
         ;;
-        clear|c|list|l)
+        empty|e|list|l)
             Validate minimal-arguments 1 $# "File not defined."
             while [[ $# -gt 0 ]]; do
                 case "$1" in
@@ -775,7 +775,7 @@ else
             done
             Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
         ;;
-        clear|c|list|l)
+        empty|e|list|l)
             while [[ $# -gt 0 ]]; do
                 case "$1" in
                     *) files_arguments+=("$1")
