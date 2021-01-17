@@ -287,6 +287,13 @@ TagFile() {
             tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
             basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
         ;;
+        replace|r)
+            tags_new=("${tags_arguments[@]}")
+            # Alternative ArrayUnique.
+            tags_new_filtered=($(echo "${tags_new[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+            tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
+            basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
+        ;;
         delete|d)
             ArrayDiff tags[@] tags_arguments[@]
             tags_new=("${_return[@]}")
@@ -389,6 +396,19 @@ TagDirectory() {
                         else
                             echo " - $e" >> "$full_path"
                         fi
+                    done
+                fi
+            fi
+            echo "$full_path"
+        ;;
+        replace|r)
+            if [ -f "$full_path" ];then
+                if [[ ! $dry_run == 1 ]];then
+                    for e in "${tags[@]}"; do
+                        sed -i '/^ - '"$e"'$/d' "$full_path"
+                    done
+                    for e in "${tags_arguments[@]}"; do
+                        echo " - $e" >> "$full_path"
                     done
                 fi
             fi

@@ -37,6 +37,7 @@ case $command in
     empty|e) shift ;;
     find|f) shift ;;
     list|l) shift ;;
+    replace|r) shift ;;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac
 
