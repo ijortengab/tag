@@ -313,11 +313,16 @@ TagFile() {
             output="$full_path_new"
         fi
         if [[ ! $dry_run == 1 ]];then
-            mv "$full_path" "$full_path_new" && echo "$output"
+            mv "$full_path" "$full_path_new"
+        fi
+    else
+        if [[ "$dirname" == "$PWD" ]];then
+            output="$basename"
         else
-            echo "$output"
+            output="$full_path"
         fi
     fi
+    echo "$output"
 }
 
 # Modifikasi tags terhadap directory.
@@ -386,8 +391,8 @@ TagDirectory() {
                         fi
                     done
                 fi
-                echo "$full_path"
             fi
+            echo "$full_path"
         ;;
         delete|d)
             if [ -f "$full_path" ];then
