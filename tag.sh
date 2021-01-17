@@ -148,7 +148,7 @@ ArrayUnique() {
 # Returns:
 #   None
 Version() {
-    echo '0.4.0'
+    echo '0.5.0'
 }
 
 # Print Short Usage of Command.
@@ -187,17 +187,19 @@ Usage: tag <command> [arguments|STDIN]
 
 Available Commands
    add        Add tag(s) to the file (Alias: a)
+   replace    Replace all tag from the file (Alias: r)
    delete     Delete tag(s) from the file (Alias: d)
    empty      Empty all tag(s) from the file (Alias: e)
    find       Find tag by text or word (Alias: f)
-   list       List all tag from the file (Alias: f)
+   export     Export all tag from the file (Alias: x)
 
 Format Command
-   tag add|a    [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
-   tag delete|d [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
-   tag empty|e  [-nfd]   [-D <n>] [-t <n>] <file|STDIN> [<file>]...
-   tag find|f   [-1aiwp] [-x <n>]... <tag> [<tag>]...
-   tag list|l   [-fd]    [-D <n>] <file|STDIN> [<file>]...
+   tag add|a     [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
+   tag replace|r [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d  [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
+   tag empty|e   [-nfd]   [-D <n>] [-t <n>] <file|STDIN> [<file>]...
+   tag find|f    [-1aiwp] [-x <n>]... <tag> [<tag>]...
+   tag export|x  [-fd]    [-D <n>] <file|STDIN> [<file>]...
 
 Global options
    -h, --help
@@ -217,7 +219,7 @@ Options per Command.
         Available for `add`, `delete`, and `empty` command.
    -D, --directory
         Set the directory if file argument is not relative to $PWD.
-        Available for `add`, `delete`, `empty`, and `list` command.
+        Available for `add`, `delete`, `empty`, and `export` command.
    -t, --tag-file=<n>
         Set filename for Tagging Directory only. The extension `.tag` must not
         contains in argument, because it always added.
@@ -446,7 +448,7 @@ TagFile() {
         empty|e)
             basename_new="${filename}.$extension"
         ;;
-        list|l)
+        export|x)
             for e in "${tags[@]}"; do
                 echo "$e"
             done
@@ -579,7 +581,7 @@ TagDirectory() {
             fi
             echo "$full_path"
         ;;
-        list|l)
+        export|x)
             for e in "${tags[@]}"; do
                 echo "$e"
             done
@@ -745,11 +747,11 @@ fi
 command="$1";
 case $command in
     add|a) shift ;;
+    replace|r) shift ;;
     delete|d) shift ;;
     empty|e) shift ;;
     find|f) shift ;;
-    list|l) shift ;;
-    replace|r) shift ;;
+    export|x) shift ;;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac
 
@@ -765,7 +767,7 @@ if [ -t 0 ]; then
                 esac
             done
         ;;
-        empty|e|list|l)
+        empty|e|export|x)
             Validate minimal-arguments 1 $# "File not defined."
             while [[ $# -gt 0 ]]; do
                 case "$1" in
@@ -801,7 +803,7 @@ else
             done
             Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
         ;;
-        empty|e|list|l)
+        empty|e|export|x)
             while [[ $# -gt 0 ]]; do
                 case "$1" in
                     *) files_arguments+=("$1")
