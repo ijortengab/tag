@@ -8,7 +8,7 @@ FLAG=(
         '--all|-a'
         '--word|-w'
         '--ignore-case|-i'
-        '-1'
+        '--recursive|-r'
     # Add/Delete/Clear Options:
         '--dry-run|-n'
 )

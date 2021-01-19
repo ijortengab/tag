@@ -6,7 +6,6 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --help|-h) help=1; shift ;;
         --version) version=1; shift ;;
-        -1) _1=1; shift ;;
         -d) filter=d; shift ;;
         -f) filter=f; shift ;;
         --all|-a) all=1; shift ;;
@@ -17,6 +16,7 @@ while [[ $# -gt 0 ]]; do
         --exclude-dir|-x) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then exclude_dir+=("$2"); shift; fi; shift ;;
         --ignore-case|-i) ignore_case=1; shift ;;
         --preview|-p) preview=1; shift ;;
+        --recursive|-r) recursive=1; shift ;;
         --type=*) filter="${1#*=}"; shift ;;
         --type) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then filter="$2"; shift; fi; shift ;;
         --tag-file=*|-t=*) tag_file="${1#*=}"; shift ;;
@@ -33,10 +33,9 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":h1dfaD:nx:ipt:w" opt; do
+            while getopts ":hdfaD:nx:iprt:w" opt; do
                 case $opt in
                     h) help=1 ;;
-                    1) _1=1 ;;
                     d) filter=d ;;
                     f) filter=f ;;
                     a) all=1 ;;
@@ -45,6 +44,7 @@ while [[ $# -gt 0 ]]; do
                     x) exclude_dir+=("$OPTARG") ;;
                     i) ignore_case=1 ;;
                     p) preview=1 ;;
+                    r) recursive=1 ;;
                     t) tag_file="$OPTARG" ;;
                     w) word=1 ;;
                 esac
@@ -194,12 +194,12 @@ Available Commands
    export     Export all tag from the file (Alias: x)
 
 Format Command
-   tag add|a     [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
-   tag replace|r [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
-   tag delete|d  [-nfd]   [-D <n>] [-t <n>] <file|STDIN> <tag> [<tag>]...
-   tag empty|e   [-nfd]   [-D <n>] [-t <n>] <file|STDIN> [<file>]...
-   tag find|f    [-1aiwp] [-x <n>]... <tag> [<tag>]...
-   tag export|x  [-fd]    [-D <n>] <file|STDIN> [<file>]...
+   tag add|a     [-n]     [-D <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
+   tag replace|r [-n]     [-D <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d  [-n]     [-D <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
+   tag empty|e   [-n]     [-D <d>] [-t <f>] <file|STDIN> [<file>]...
+   tag find|f    [-raiwp] [-x <d>]...       <tag> [<tag>]...
+   tag export|x           [-D <d>]          <file|STDIN> [<file>]...
 
 Global options
    -h, --help
@@ -207,15 +207,14 @@ Global options
    --version
         Print current version
    -f, --type f
-        Only processes regular files, even though there is directory in
+        Only processes regular files and skip all directory
         arguments
    -d, --type d
-        Only processes directories, even though there is regular file in
-        arguments
+        Only processes directories and skip all regular file
 
-Options per Command.
+Options
    -n, --dry-run
-        Perform a trial run with no changes made
+        Perform a trial run with no changes made.
         Available for `add`, `delete`, and `empty` command.
    -D, --directory
         Set the directory if file argument is not relative to $PWD.
@@ -223,17 +222,18 @@ Options per Command.
    -t, --tag-file=<n>
         Set filename for Tagging Directory only. The extension `.tag` must not
         contains in argument, because it always added.
-        Available for `add`, `delete`, and `empty` command.
+        Available for `add`, `delete`, `empty`, and `export` command.
 
 Options for Find command
-   -1   Find in starting point directory level depth only and no recursive.
-        This is equals to `maxdepth 1` in find command.
+   -r, --recursive
+        Find in current directory and each directory recursively. Default is
+        find in current directory only.
    -a, --all
         Do not exclude directory starting with .
    -i, --ignore-case
-        Ignore case distinctions.
+        Ignore case distinctions
    -w, --word
-        Find tag by word. Default is find tag by containing text
+        Find tag by word. Default is find tag by containing text.
         Attention. For example: `-w fair`, then:
          - match for `fair` tag
          - match for `fair-play` tag
@@ -242,7 +242,7 @@ Options for Find command
         Preview find command without execute it
    -x, --exclude-dir=<dir>
         Skip directory and all files inside them. Repeat option to skip other
-        directory
+        directory.
 
 Example
    tag add "November Rain.mp3" love rock
@@ -617,19 +617,14 @@ FindGenerator() {
     local find_arg_directory_exclude
     local find_arg_filename
     local find_parameter_name='-name'
-    local is_recursive=1
     local find_arg_name
     local while_lopping_command
     local grep_command grep_arg_E grep_arg_i grep_arg_w grep_arg
-    if [[ $_1 == 1 ]];then
-        is_recursive=0
-        find_directory='.'
-        find_arg_maxdepth=' -maxdepth 1'
-    fi
     if [[ $ignore_case == 1 ]];then
         find_parameter_name='-iname'
     fi
-    if [[ $is_recursive == 1 ]];then
+    # Recursive.
+    if [[ $recursive == 1 ]];then
         if [[ ! $all == 1 ]];then
             directory_exclude_default=(".*")
             find_directory='"$PWD"'
@@ -646,6 +641,8 @@ FindGenerator() {
         if [[ ${#directory_exclude[@]} -gt 0 ]];then
             find_arg_directory_exclude=" -type d ${find_arg_directory_exclude} -prune -false -o"
         fi
+    else
+        find_arg_maxdepth=' -maxdepth 1'
     fi
     find_arg=" ${find_directory}"
     find_arg_name=()

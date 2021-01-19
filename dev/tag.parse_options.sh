@@ -4,7 +4,6 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --help|-h) help=1; shift ;;
         --version) version=1; shift ;;
-        -1) _1=1; shift ;;
         -d) filter=d; shift ;;
         -f) filter=f; shift ;;
         --all|-a) all=1; shift ;;
@@ -15,6 +14,7 @@ while [[ $# -gt 0 ]]; do
         --exclude-dir|-x) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then exclude_dir+=("$2"); shift; fi; shift ;;
         --ignore-case|-i) ignore_case=1; shift ;;
         --preview|-p) preview=1; shift ;;
+        --recursive|-r) recursive=1; shift ;;
         --type=*) filter="${1#*=}"; shift ;;
         --type) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then filter="$2"; shift; fi; shift ;;
         --tag-file=*|-t=*) tag_file="${1#*=}"; shift ;;
@@ -31,10 +31,9 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":h1dfaD:nx:ipt:w" opt; do
+            while getopts ":hdfaD:nx:iprt:w" opt; do
                 case $opt in
                     h) help=1 ;;
-                    1) _1=1 ;;
                     d) filter=d ;;
                     f) filter=f ;;
                     a) all=1 ;;
@@ -43,6 +42,7 @@ while [[ $# -gt 0 ]]; do
                     x) exclude_dir+=("$OPTARG") ;;
                     i) ignore_case=1 ;;
                     p) preview=1 ;;
+                    r) recursive=1 ;;
                     t) tag_file="$OPTARG" ;;
                     w) word=1 ;;
                 esac
