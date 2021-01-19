@@ -38,7 +38,7 @@ which tag
 1. Add `love` and `rock` tag in `November Rain.mp3` file.
 
 ```
-tag add love rock 'November Rain.mp3'
+tag add 'November Rain.mp3' love rock
 ```
 
 File renamed to `November Rain[love rock].mp3`
