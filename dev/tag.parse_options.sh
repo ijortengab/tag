@@ -4,11 +4,11 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --help|-h) help=1; shift ;;
         --version|-v) version=1; shift ;;
-        -d) filter=d; shift ;;
+        -D) filter=d; shift ;;
         -f) filter=f; shift ;;
         --all|-a) all=1; shift ;;
-        --directory=*|-D=*) directory="${1#*=}"; shift ;;
-        --directory|-D) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then directory="$2"; shift; fi; shift ;;
+        --directory=*|-d=*) directory="${1#*=}"; shift ;;
+        --directory|-d) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then directory="$2"; shift; fi; shift ;;
         --dry-run|-n) dry_run=1; shift ;;
         --exclude-dir=*|-x=*) exclude_dir+=("${1#*=}"); shift ;;
         --exclude-dir|-x) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then exclude_dir+=("$2"); shift; fi; shift ;;
@@ -31,14 +31,14 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":hvdfaD:nx:iprt:w" opt; do
+            while getopts ":hvDfad:nx:iprt:w" opt; do
                 case $opt in
                     h) help=1 ;;
                     v) version=1 ;;
-                    d) filter=d ;;
+                    D) filter=d ;;
                     f) filter=f ;;
                     a) all=1 ;;
-                    D) directory="$OPTARG" ;;
+                    d) directory="$OPTARG" ;;
                     n) dry_run=1 ;;
                     x) exclude_dir+=("$OPTARG") ;;
                     i) ignore_case=1 ;;

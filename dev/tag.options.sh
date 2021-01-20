@@ -20,12 +20,12 @@ VALUE=(
     # Global Options:
         '--tag-file|-t'
     # Add/Delete/Clear Options:
-        '--directory|-D'
+        '--directory|-d'
 )
 CSV=(
     # Global Options:
     'short:-f,parameter:filter,flag_option:true=f'
-    'short:-d,parameter:filter,flag_option:true=d'
+    'short:-D,parameter:filter,flag_option:true=d'
     'long:--type,parameter:filter,type:value'
 )
 source $(dirname $0)/bash/functions/code-generator-parse-options/dev/code-generator-parse-options.function.sh

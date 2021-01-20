@@ -6,11 +6,11 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --help|-h) help=1; shift ;;
         --version|-v) version=1; shift ;;
-        -d) filter=d; shift ;;
+        -D) filter=d; shift ;;
         -f) filter=f; shift ;;
         --all|-a) all=1; shift ;;
-        --directory=*|-D=*) directory="${1#*=}"; shift ;;
-        --directory|-D) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then directory="$2"; shift; fi; shift ;;
+        --directory=*|-d=*) directory="${1#*=}"; shift ;;
+        --directory|-d) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then directory="$2"; shift; fi; shift ;;
         --dry-run|-n) dry_run=1; shift ;;
         --exclude-dir=*|-x=*) exclude_dir+=("${1#*=}"); shift ;;
         --exclude-dir|-x) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then exclude_dir+=("$2"); shift; fi; shift ;;
@@ -33,14 +33,14 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":hvdfaD:nx:iprt:w" opt; do
+            while getopts ":hvDfad:nx:iprt:w" opt; do
                 case $opt in
                     h) help=1 ;;
                     v) version=1 ;;
-                    d) filter=d ;;
+                    D) filter=d ;;
                     f) filter=f ;;
                     a) all=1 ;;
-                    D) directory="$OPTARG" ;;
+                    d) directory="$OPTARG" ;;
                     n) dry_run=1 ;;
                     x) exclude_dir+=("$OPTARG") ;;
                     i) ignore_case=1 ;;
@@ -195,12 +195,12 @@ Available Commands
    export     Export all tag from the file (Alias: x)
 
 Format Command
-   tag add|a     [-n]     [-D <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
-   tag replace|r [-n]     [-D <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
-   tag delete|d  [-n]     [-D <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
-   tag empty|e   [-n]     [-D <d>] [-t <f>] <file|STDIN> [<file>]...
+   tag add|a     [-n]     [-d <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
+   tag replace|r [-n]     [-d <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d  [-n]     [-d <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
+   tag empty|e   [-n]     [-d <d>] [-t <f>] <file|STDIN> [<file>]...
    tag find|f    [-raiwp] [-x <d>]...       <tag> [<tag>]...
-   tag export|x           [-D <d>]          <file|STDIN> [<file>]...
+   tag export|x           [-d <d>]          <file|STDIN> [<file>]...
 
 Global options
    -h, --help
@@ -210,11 +210,11 @@ Global options
    -f, --type f
         Only processes regular files and skip all directory
         arguments
-   -d, --type d
+   -D, --type d
         Only processes directories and skip all regular file
 
 Options
-   -D, --directory
+   -d, --directory
         Set the directory if file argument is not relative to $PWD.
         Not affected for `find` command.
    -t, --tag-file=<n>
