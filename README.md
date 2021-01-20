@@ -111,6 +111,12 @@ Global options
         Only processes directories and skip all regular file
 
 Options
+   -f, --file n
+        Set the filename or dirname to be processed
+        Not affected for `find` command.
+   -t, --tag n
+        Set the name tag to be processed
+        Not affected for `empty` and `export` command.
    -d, --directory
         Set the directory if file argument is not relative to $PWD.
         Not affected for `find` command.

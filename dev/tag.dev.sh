@@ -12,8 +12,6 @@ source $(dirname $0)/tag.functions.sh
 
 # Variable.
 command=
-files_arguments=()
-tags_arguments=()
 
 if [[ $help == 1 ]];then
     Help

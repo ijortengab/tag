@@ -27,6 +27,8 @@ CSV=(
     'short:-F,parameter:filter,flag_option:true=f'
     'short:-D,parameter:filter,flag_option:true=d'
     'long:--type,parameter:filter,type:value'
+    'long:--file,short:-f,parameter:files_arguments,type:multivalue'
+    'long:--tag,short:-t,parameter:tags_arguments,type:multivalue'
 )
 source $(dirname $0)/bash/functions/code-generator-parse-options/dev/code-generator-parse-options.function.sh
 
