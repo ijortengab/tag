@@ -767,72 +767,40 @@ case $command in
     *) Die "Command '$1' unknown. Type --help for more info."
 esac
 
-if [ -t 0 ]; then
-    # Jika dari terminal.
-    case $command in
-        find|f)
-            while [[ $# -gt 0 ]]; do
-                case "$1" in
-                    *) tags_arguments+=("$1")
-                    shift
-                esac
-            done
-        ;;
-        empty|e|export|x)
-            Validate minimal-arguments 1 $# "File not defined."
-            while [[ $# -gt 0 ]]; do
-                case "$1" in
-                    *) files_arguments+=("$1")
-                    shift
-                esac
-            done
-        ;;
-        *)
-            Validate minimal-arguments 1 $# "File not defined."
-            Validate minimal-arguments 2 $# "Tag(s) not defined."
-            files_arguments+=("$1");
-            shift
-            while [[ $# -gt 0 ]]; do
-                case "$1" in
-                    *) tags_arguments+=("$1")
-                    shift
-                esac
-            done
-    esac
-else
-    # Jika dari standard input.
+# Jika bukan dari terminal, yakni dari standard input.
+if [ ! -t 0 ]; then
     while read _each; do
         files_arguments+=("$_each")
     done </dev/stdin
-    case $command in
-        find|f)
-            while [[ $# -gt 0 ]]; do
-                case "$1" in
-                    *) tags_arguments+=("$1")
-                    shift
-                esac
-            done
-        ;;
-        empty|e|export|x)
-            while [[ $# -gt 0 ]]; do
-                case "$1" in
-                    *) files_arguments+=("$1")
-                    shift
-                esac
-            done
-            Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
-        ;;
-        *)
-            Validate minimal-arguments 1 $# "Tag(s) not defined."
-            while [[ $# -gt 0 ]]; do
-                case "$1" in
-                    *) tags_arguments+=("$1")
-                    shift
-                esac
-            done
-            Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
-    esac
 fi
+
+# Free style format of operands.
+# Auto set as file or tag.
+while [[ $# -gt 0 ]]; do
+    PathModify clear
+    PathModify full-path "$1"
+    if [ -f "$full_path" ];then
+        files_arguments+=("$1")
+    elif [ -d "$full_path" ];then
+        files_arguments+=("$1")
+    else
+        tags_arguments+=("$1")
+    fi
+    shift
+done
+
+# Validate.
+case $command in
+    find|f)
+        Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
+    ;;
+    empty|e|export|x)
+        Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
+    ;;
+    *)
+        Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
+        Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
+esac
 
 ArrayUnique tags_arguments[@]
 tags_arguments=("${_return[@]}")
