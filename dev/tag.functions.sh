@@ -65,7 +65,7 @@ Format Command
 Global options
    -h, --help
         Print this help
-   --version
+   -v, --version
         Print current version
    -f, --type f
         Only processes regular files and skip all directory

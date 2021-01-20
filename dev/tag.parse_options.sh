@@ -3,7 +3,7 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --help|-h) help=1; shift ;;
-        --version) version=1; shift ;;
+        --version|-v) version=1; shift ;;
         -d) filter=d; shift ;;
         -f) filter=f; shift ;;
         --all|-a) all=1; shift ;;
@@ -31,9 +31,10 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":hdfaD:nx:iprt:w" opt; do
+            while getopts ":hvdfaD:nx:iprt:w" opt; do
                 case $opt in
                     h) help=1 ;;
+                    v) version=1 ;;
                     d) filter=d ;;
                     f) filter=f ;;
                     a) all=1 ;;
