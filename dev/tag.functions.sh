@@ -67,7 +67,7 @@ Global options
         Print this help
    -v, --version
         Print current version
-   -f, --type f
+   -F, --type f
         Only processes regular files and skip all directory
         arguments
    -D, --type d

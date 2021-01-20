@@ -5,7 +5,7 @@ while [[ $# -gt 0 ]]; do
         --help|-h) help=1; shift ;;
         --version|-v) version=1; shift ;;
         -D) filter=d; shift ;;
-        -f) filter=f; shift ;;
+        -F) filter=f; shift ;;
         --all|-a) all=1; shift ;;
         --directory=*|-d=*) directory="${1#*=}"; shift ;;
         --directory|-d) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then directory="$2"; shift; fi; shift ;;
@@ -31,12 +31,12 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":hvDfad:nx:iprt:w" opt; do
+            while getopts ":hvDFad:nx:iprt:w" opt; do
                 case $opt in
                     h) help=1 ;;
                     v) version=1 ;;
                     D) filter=d ;;
-                    f) filter=f ;;
+                    F) filter=f ;;
                     a) all=1 ;;
                     d) directory="$OPTARG" ;;
                     n) dry_run=1 ;;

@@ -12,7 +12,7 @@ echo
 echo    ${red}-h, --help${normal}" ....... "${cyan}\$help${normal}" ....... = "${magenta}$help${normal}
 echo    ${red}-v, --version${normal}" .... "${cyan}\$version${normal}" .... = "${magenta}$version${normal}
 echo    ${red}-D${normal}" ............... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
-echo    ${red}-f${normal}" ............... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
+echo    ${red}-F${normal}" ............... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
 echo    ${red}-a, --all${normal}" ........ "${cyan}\$all${normal}" ........ = "${magenta}$all${normal}
 echo    ${red}-d, --directory${normal}"    "${cyan}\$directory${normal}"    = "${magenta}$directory${normal}
 echo    ${red}-n, --dry-run${normal}" .... "${cyan}\$dry_run${normal}" .... = "${magenta}$dry_run${normal}

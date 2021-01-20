@@ -24,7 +24,7 @@ VALUE=(
 )
 CSV=(
     # Global Options:
-    'short:-f,parameter:filter,flag_option:true=f'
+    'short:-F,parameter:filter,flag_option:true=f'
     'short:-D,parameter:filter,flag_option:true=d'
     'long:--type,parameter:filter,type:value'
 )
