@@ -114,7 +114,6 @@ case $command in
             shift
         done
 esac
-
 # VarDump --------
 # VarDump full_path dirname basename filename extension PWD
 # VarDump tags

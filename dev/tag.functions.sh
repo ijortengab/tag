@@ -26,9 +26,9 @@ Usage() {
     version=`Version`
     cat <<- EOF
 Usage: tag <command> [arguments|STDIN]
+Try 'tag --help' for more information.
 
-Tag version $version, type --help for more info.
-
+Tag version $version.
 EOF
 }
 
