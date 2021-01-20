@@ -45,7 +45,6 @@ if [ -t 0 ]; then
     # Jika dari terminal.
     case $command in
         find|f)
-            Validate minimal-arguments 1 $# "Tag(s) not defined."
             while [[ $# -gt 0 ]]; do
                 case "$1" in
                     *) tags_arguments+=("$1")
@@ -87,7 +86,6 @@ else
                     shift
                 esac
             done
-            Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
         ;;
         empty|e|export|x)
             while [[ $# -gt 0 ]]; do
