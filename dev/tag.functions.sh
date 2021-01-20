@@ -9,7 +9,7 @@
 # Returns:
 #   None
 Version() {
-    echo '0.7.0'
+    echo '0.7.1'
 }
 
 # Print Short Usage of Command.

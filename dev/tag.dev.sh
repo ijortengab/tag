@@ -65,7 +65,7 @@ done
 # Validate.
 case $command in
     find|f)
-        Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
+        Validate minimal-arguments 0 0
     ;;
     empty|e|export|x)
         Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
