@@ -38,10 +38,18 @@ which tag
 1. Add `love` and `rock` tag in `November Rain.mp3` file.
 
 ```
-tag add 'November Rain.mp3' love rock
+tag add -f 'November Rain.mp3' -t love -t rock
 ```
 
 File renamed to `November Rain[love rock].mp3`
+
+If you are sure that the file 'November Rain.mp3' exists and there are not file
+named `rock` and `love` in current directory, you can use this free-style
+command:
+
+```
+tag add love rock 'November Rain.mp3'
+```
 
 2. Add `trip-Bali-2021` tag to all JPEG files in Your Photos directory.
 
@@ -50,10 +58,10 @@ ls ~/Photos/*.jpg | tag add trip-Bali-2021
 ```
 
 3. If `ls` command have `path` argument and return relative `path` filename,
-add `--directory` or `-D` options to make it same `path` as `ls` command.
+add `--directory` or `-d` options to make it same `path` as `ls` command.
 
 ```
-ls ~/Photos/event/ | tag add hiking -D ~/Photos/event/
+ls ~/Photos/event/ | tag add hiking -d ~/Photos/event/
 ```
 
 4. Use wildcard (`*`) in `ls` command, if you haven't finished tagging the files.
@@ -71,7 +79,7 @@ File renamed from `IMG-20201201-171501.jpg` to `IMG-20201201-171501[gede-mountai
 5. Bulk rename tag in filename.
 
 ```
-tag find hiking -w -f | tag delete hiking | tag add adventure
+tag find hiking -w -F | tag delete hiking | tag add adventure
 ```
 
 File renamed from `IMG-20201201-171501[gede-mountain hiking trip-2015].jpg` to `IMG-20201201-171501[adventure gede-mountain trip-2015].jpg`
@@ -92,12 +100,18 @@ Available Commands
    export     Export all tag from the file (Alias: x)
 
 Format Command
-   tag add|a     [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
-   tag set|s     [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
-   tag delete|d  [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
-   tag empty|e   [-n]     [-d <d>] [-T <f>] <file|STDIN> [<file>]...
-   tag find|f    [-raiwp] [-x <d>]...       <tag> [<tag>]...
-   tag export|x           [-d <d>]          <file|STDIN> [<file>]...
+   tag add|a     [-n]     [-d <d>] [-T <f>] [-f <n|STDIN>]... [-t <n>]...
+   tag set|s     [-n]     [-d <d>] [-T <f>] [-f <n|STDIN>]... [-t <n>]...
+   tag delete|d  [-n]     [-d <d>] [-T <f>] [-f <n|STDIN>]... [-t <n>]...
+   tag empty|e   [-n]     [-d <d>] [-T <f>] [-f <n|STDIN>]...
+   tag find|f    [-raiwp] [-x <d>]...                         [-t <n>]...
+   tag export|x           [-d <d>]          [-f <n|STDIN>]...
+
+Free-style format
+   tag <command> <options> <operand> [<operand>]...
+
+   Operands that are file names considered as files (will be set as argument
+   of -f option), otherwise as tags (will be set as argument of -t option).
 
 Global options
    -h, --help
@@ -155,7 +169,7 @@ Example
    ls IMG-20201201-171501* | tag add hiking
    ls IMG-20201201-171501* | tag add hiking gede-mountain
    ls IMG-20201201-171501* | tag add hiking gede-mountain trip-2015
-   tag find hiking -w -f | tag delete hiking | tag add adventure
+   tag find hiking -w -F | tag delete hiking | tag add adventure
 
 Tagging directory
    - Tag the directory doesn't rename the directory name.
