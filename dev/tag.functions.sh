@@ -74,18 +74,18 @@ Global options
         Only processes directories and skip all regular file
 
 Options
-   -n, --dry-run
-        Perform a trial run with no changes made.
-        Available for `add`, `delete`, and `empty` command.
    -D, --directory
         Set the directory if file argument is not relative to $PWD.
-        Available for `add`, `delete`, `empty`, and `export` command.
+        Not affected for `find` command.
    -t, --tag-file=<n>
         Set filename for Tagging Directory only. The extension `.tag` must not
         contains in argument, because it always added.
-        Available for `add`, `delete`, `empty`, and `export` command.
+        Not affected for `find` command.
+   -n, --dry-run
+        Perform a trial run with no changes made.
+        Not affected for `find` and `export` command.
 
-Options for Find command
+Options for `find` command
    -r, --recursive
         Find in current directory and each directory recursively. Default is
         find in current directory only.
