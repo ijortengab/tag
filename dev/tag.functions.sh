@@ -48,7 +48,7 @@ Usage: tag <command> [arguments|STDIN]
 
 Available Commands
    add        Add tag(s) to the file (Alias: a)
-   replace    Replace all tag from the file (Alias: r)
+   set        Set tag(s) to the file, existing tags will be replaced (Alias: s)
    delete     Delete tag(s) from the file (Alias: d)
    empty      Empty all tag(s) from the file (Alias: e)
    find       Find tag by text or word (Alias: f)
@@ -56,7 +56,7 @@ Available Commands
 
 Format Command
    tag add|a     [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
-   tag replace|r [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
+   tag set|s     [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
    tag delete|d  [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
    tag empty|e   [-n]     [-d <d>] [-T <f>] <file|STDIN> [<file>]...
    tag find|f    [-raiwp] [-x <d>]...       <tag> [<tag>]...
@@ -289,7 +289,7 @@ TagFile() {
             tags_new_filtered_stringify=$(printf %s "$f" "${tags_new_filtered[@]/#/ }" | cut -c2-)
             basename_new="${filename}[${tags_new_filtered_stringify}].$extension"
         ;;
-        replace|r)
+        set|s)
             tags_new=("${tags_arguments[@]}")
             # Alternative ArrayUnique.
             tags_new_filtered=($(echo "${tags_new[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
@@ -333,7 +333,7 @@ TagFile() {
     fi
     case $command in
         add|a) echo "$output" ;;
-        replace|r) echo "$output" ;;
+        set|s) echo "$output" ;;
         delete|d) echo "$output" ;;
         empty|e) echo "$output" ;;
     esac
@@ -408,7 +408,7 @@ TagDirectory() {
             fi
             echo "$full_path"
         ;;
-        replace|r)
+        set|s)
             if [ -f "$full_path" ];then
                 if [[ ! $dry_run == 1 ]];then
                     for e in "${tags[@]}"; do

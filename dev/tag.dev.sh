@@ -33,7 +33,7 @@ fi
 command="$1";
 case $command in
     add|a) shift ;;
-    replace|r) shift ;;
+    set|s) shift ;;
     delete|d) shift ;;
     empty|e) shift ;;
     find|f) shift ;;
