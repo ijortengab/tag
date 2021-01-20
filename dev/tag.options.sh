@@ -18,7 +18,7 @@ MULTIVALUE=(
 )
 VALUE=(
     # Global Options:
-        '--tag-file|-t'
+        '--tag-file|-T'
     # Add/Delete/Clear Options:
         '--directory|-d'
 )

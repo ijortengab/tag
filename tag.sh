@@ -19,8 +19,8 @@ while [[ $# -gt 0 ]]; do
         --recursive|-r) recursive=1; shift ;;
         --type=*) filter="${1#*=}"; shift ;;
         --type) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then filter="$2"; shift; fi; shift ;;
-        --tag-file=*|-t=*) tag_file="${1#*=}"; shift ;;
-        --tag-file|-t) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then tag_file="$2"; shift; fi; shift ;;
+        --tag-file=*|-T=*) tag_file="${1#*=}"; shift ;;
+        --tag-file|-T) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then tag_file="$2"; shift; fi; shift ;;
         --word|-w) word=1; shift ;;
         *) _new_arguments+=("$1"); shift ;;
     esac
@@ -33,7 +33,7 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":hvDFad:nx:iprt:w" opt; do
+            while getopts ":hvDFad:nx:iprT:w" opt; do
                 case $opt in
                     h) help=1 ;;
                     v) version=1 ;;
@@ -46,7 +46,7 @@ while [[ $# -gt 0 ]]; do
                     i) ignore_case=1 ;;
                     p) preview=1 ;;
                     r) recursive=1 ;;
-                    t) tag_file="$OPTARG" ;;
+                    T) tag_file="$OPTARG" ;;
                     w) word=1 ;;
                 esac
             done
@@ -195,10 +195,10 @@ Available Commands
    export     Export all tag from the file (Alias: x)
 
 Format Command
-   tag add|a     [-n]     [-d <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
-   tag replace|r [-n]     [-d <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
-   tag delete|d  [-n]     [-d <d>] [-t <f>] <file|STDIN> <tag> [<tag>]...
-   tag empty|e   [-n]     [-d <d>] [-t <f>] <file|STDIN> [<file>]...
+   tag add|a     [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
+   tag replace|r [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
+   tag delete|d  [-n]     [-d <d>] [-T <f>] <file|STDIN> <tag> [<tag>]...
+   tag empty|e   [-n]     [-d <d>] [-T <f>] <file|STDIN> [<file>]...
    tag find|f    [-raiwp] [-x <d>]...       <tag> [<tag>]...
    tag export|x           [-d <d>]          <file|STDIN> [<file>]...
 
@@ -217,7 +217,7 @@ Options
    -d, --directory
         Set the directory if file argument is not relative to $PWD.
         Not affected for `find` command.
-   -t, --tag-file=<n>
+   -T, --tag-file=<n>
         Set filename for Tagging Directory only. The extension `.tag` must not
         contains in argument, because it always added.
         Not affected for `find` command.

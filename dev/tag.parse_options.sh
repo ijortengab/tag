@@ -17,8 +17,8 @@ while [[ $# -gt 0 ]]; do
         --recursive|-r) recursive=1; shift ;;
         --type=*) filter="${1#*=}"; shift ;;
         --type) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then filter="$2"; shift; fi; shift ;;
-        --tag-file=*|-t=*) tag_file="${1#*=}"; shift ;;
-        --tag-file|-t) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then tag_file="$2"; shift; fi; shift ;;
+        --tag-file=*|-T=*) tag_file="${1#*=}"; shift ;;
+        --tag-file|-T) if [[ ! $2 == "" && ! $2 =~ ^-[^-] ]]; then tag_file="$2"; shift; fi; shift ;;
         --word|-w) word=1; shift ;;
         *) _new_arguments+=("$1"); shift ;;
     esac
@@ -31,7 +31,7 @@ _new_arguments=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -[^-]*) OPTIND=1
-            while getopts ":hvDFad:nx:iprt:w" opt; do
+            while getopts ":hvDFad:nx:iprT:w" opt; do
                 case $opt in
                     h) help=1 ;;
                     v) version=1 ;;
@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]]; do
                     i) ignore_case=1 ;;
                     p) preview=1 ;;
                     r) recursive=1 ;;
-                    t) tag_file="$OPTARG" ;;
+                    T) tag_file="$OPTARG" ;;
                     w) word=1 ;;
                 esac
             done

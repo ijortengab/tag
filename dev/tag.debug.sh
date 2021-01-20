@@ -23,7 +23,7 @@ echo    ${red}-i, --ignore-case${normal}"  "${cyan}\$ignore_case${normal}"  = "$
 echo    ${red}-p, --preview${normal}" .... "${cyan}\$preview${normal}" .... = "${magenta}$preview${normal}
 echo    ${red}-r, --recursive${normal}"    "${cyan}\$recursive${normal}"    = "${magenta}$recursive${normal}
 echo    ${red}--type${normal}" ........... "${cyan}\$filter${normal}" ..... = "${magenta}$filter${normal}
-echo    ${red}-t, --tag-file${normal}" ... "${cyan}\$tag_file${normal}" ... = "${magenta}$tag_file${normal}
+echo    ${red}-T, --tag-file${normal}" ... "${cyan}\$tag_file${normal}" ... = "${magenta}$tag_file${normal}
 echo    ${red}-w, --word${normal}" ....... "${cyan}\$word${normal}" ....... = "${magenta}$word${normal}
 
 echo
