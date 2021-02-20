@@ -27,7 +27,7 @@ sed -i '/tag\.debug\.sh/d' ../tag.sh
 sed -i '/VarDump/d' ../tag.sh
 
 # Create File.
-touch ../README.dev.md
+touch ../README.md
 SOURCE=$(<README.dev.md)
 # Replace line.
 HELP=`Help`

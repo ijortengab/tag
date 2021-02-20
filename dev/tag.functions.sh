@@ -243,7 +243,7 @@ PathModify () {
 #
 # Globals:
 #   Used: full_path, dirname, basename, extension, filename
-#         dry_run, tags_arguments
+#         dry_run, tags_arguments, command
 #
 # Arguments:
 #   None
@@ -354,7 +354,7 @@ TagFile() {
 # Modifikasi tags terhadap directory.
 #
 # Globals:
-#   Used: full_path, tag_file, dry_run, tags_arguments
+#   Used: full_path, tag_file, dry_run, tags_arguments, command
 #   Modified: full_path, dirname, basename, extension, filename
 #
 #
@@ -610,4 +610,58 @@ FindGenerator() {
         echo "$command" | bash
     fi
     return 0
+}
+
+AutoDetectOperands() {
+    VarDump 'AutoDetectOperands' '<$#>'"$#"
+    VarDump files_arguments tags_arguments
+    while [[ $# -gt 0 ]]; do
+        PathModify clear
+        PathModify full-path "$1"
+        VarDump full_path dirname basename filename extension PWD
+        if [ -f "$full_path" ];then
+            files_arguments+=("$1")
+        elif [ -d "$full_path" ];then
+            files_arguments+=("$1")
+        else
+            tags_arguments+=("$1")
+        fi
+        shift
+    done
+    VarDump files_arguments tags_arguments
+}
+
+ProcessFileArguments() {
+    set -- "${files_arguments[@]}"
+    while [[ $# -gt 0 ]]; do
+        VarDump full_path dirname basename filename extension PWD
+        PathModify clear
+        PathModify full-path "$1"
+        if [ -f "$full_path" ];then
+            PathModify regular-file
+        fi
+        VarDump full_path dirname basename filename extension PWD
+        if [[ $extension == 'tag' ]];then
+            PathModify dot-tag
+        fi
+        VarDump full_path dirname basename filename extension PWD
+        if [[ -f "$full_path" && $process_file == 1 ]];then
+            TagFile
+        elif [[ -d "$full_path" && $process_dir == 1 ]];then
+            PathModify tag-directory
+            TagDirectory
+        else
+            Error "File not found: ${full_path}"
+        fi
+        shift
+    done
+}
+
+CommandExport() {
+    AutoDetectOperands "$@"
+    # Validate
+    Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
+    process_file=1
+    process_dir=1
+    ProcessFileArguments
 }

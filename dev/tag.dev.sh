@@ -28,6 +28,13 @@ if [[ $1 == '' ]];then
     exit 1
 fi
 
+# Standard Input kita anggap sebagai files.
+if [ ! -t 0 ]; then
+    while read _each; do
+        files_arguments+=("$_each")
+    done </dev/stdin
+fi
+
 command="$1";
 case $command in
     add|a) shift ;;
@@ -35,16 +42,9 @@ case $command in
     delete|d) shift ;;
     empty|e) shift ;;
     find|f) shift ;;
-    export|x) shift ;;
+    export|x) shift; CommandExport "$@"; exit;;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac
-
-# Jika bukan dari terminal, yakni dari standard input.
-if [ ! -t 0 ]; then
-    while read _each; do
-        files_arguments+=("$_each")
-    done </dev/stdin
-fi
 
 # Free style format of operands.
 # Auto set as file or tag.
@@ -67,7 +67,7 @@ case $command in
     find|f)
         Validate minimal-arguments 0 0
     ;;
-    empty|e|export|x)
+    empty|e)
         Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
     ;;
     *)

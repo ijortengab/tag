@@ -389,7 +389,7 @@ PathModify () {
 #
 # Globals:
 #   Used: full_path, dirname, basename, extension, filename
-#         dry_run, tags_arguments
+#         dry_run, tags_arguments, command
 #
 # Arguments:
 #   None
@@ -500,7 +500,7 @@ TagFile() {
 # Modifikasi tags terhadap directory.
 #
 # Globals:
-#   Used: full_path, tag_file, dry_run, tags_arguments
+#   Used: full_path, tag_file, dry_run, tags_arguments, command
 #   Modified: full_path, dirname, basename, extension, filename
 #
 #
@@ -754,6 +754,53 @@ FindGenerator() {
     return 0
 }
 
+AutoDetectOperands() {
+    while [[ $# -gt 0 ]]; do
+        PathModify clear
+        PathModify full-path "$1"
+        if [ -f "$full_path" ];then
+            files_arguments+=("$1")
+        elif [ -d "$full_path" ];then
+            files_arguments+=("$1")
+        else
+            tags_arguments+=("$1")
+        fi
+        shift
+    done
+}
+
+ProcessFileArguments() {
+    set -- "${files_arguments[@]}"
+    while [[ $# -gt 0 ]]; do
+        PathModify clear
+        PathModify full-path "$1"
+        if [ -f "$full_path" ];then
+            PathModify regular-file
+        fi
+        if [[ $extension == 'tag' ]];then
+            PathModify dot-tag
+        fi
+        if [[ -f "$full_path" && $process_file == 1 ]];then
+            TagFile
+        elif [[ -d "$full_path" && $process_dir == 1 ]];then
+            PathModify tag-directory
+            TagDirectory
+        else
+            Error "File not found: ${full_path}"
+        fi
+        shift
+    done
+}
+
+CommandExport() {
+    AutoDetectOperands "$@"
+    # Validate
+    Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
+    process_file=1
+    process_dir=1
+    ProcessFileArguments
+}
+
 # Variable.
 command=
 
@@ -772,6 +819,13 @@ if [[ $1 == '' ]];then
     exit 1
 fi
 
+# Standard Input kita anggap sebagai files.
+if [ ! -t 0 ]; then
+    while read _each; do
+        files_arguments+=("$_each")
+    done </dev/stdin
+fi
+
 command="$1";
 case $command in
     add|a) shift ;;
@@ -779,16 +833,9 @@ case $command in
     delete|d) shift ;;
     empty|e) shift ;;
     find|f) shift ;;
-    export|x) shift ;;
+    export|x) shift; CommandExport "$@"; exit;;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac
-
-# Jika bukan dari terminal, yakni dari standard input.
-if [ ! -t 0 ]; then
-    while read _each; do
-        files_arguments+=("$_each")
-    done </dev/stdin
-fi
 
 # Free style format of operands.
 # Auto set as file or tag.
@@ -810,7 +857,7 @@ case $command in
     find|f)
         Validate minimal-arguments 0 0
     ;;
-    empty|e|export|x)
+    empty|e)
         Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
     ;;
     *)
