@@ -37,7 +37,7 @@ fi
 
 command="$1";
 case $command in
-    add|a) shift ;;
+    add|a) shift; CommandAdd "$@"; exit;;
     set|s) shift ;;
     delete|d) shift ;;
     empty|e) shift ;;
