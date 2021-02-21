@@ -98,6 +98,7 @@ Available Commands
    empty      Empty all tag(s) from the file (Alias: e)
    find       Find tag by text or word (Alias: f)
    export     Export all tag from the file (Alias: x)
+   copy       Copy tag from source file to target files (Alias: c)
 
 Format Command
    tag add|a     [-n]     [-d <d>] [-T <f>] [-f <n|STDIN>]... [-t <n>]...
@@ -106,12 +107,16 @@ Format Command
    tag empty|e   [-n]     [-d <d>] [-T <f>] [-f <n|STDIN>]...
    tag find|f    [-raiwp] [-x <d>]...                         [-t <n>]...
    tag export|x           [-d <d>]          [-f <n|STDIN>]...
+   tag copy|c    [-n]     [-d <d>] [-T <f>] [-f <n|STDIN>]... [-t <n>]...
+                 <SOURCE>
 
 Free-style format
    tag <command> <options> <operand> [<operand>]...
 
    Operands that are file names considered as files (will be set as argument
    of -f option), otherwise as tags (will be set as argument of -t option).
+
+   Special for copy command, the first operand must be source file.
 
 Global options
    -h, --help
@@ -120,7 +125,6 @@ Global options
         Print current version
    -F, --type f
         Only processes regular files and skip all directory
-        arguments
    -D, --type d
         Only processes directories and skip all regular file
 
