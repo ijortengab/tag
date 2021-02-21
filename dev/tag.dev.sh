@@ -44,5 +44,6 @@ case $command in
     empty|e) CommandEmptyExport "$@";;
     find|f) CommandFind "$@";;
     export|x) CommandEmptyExport "$@";;
+    copy|c) CommandCopy "$@";;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac

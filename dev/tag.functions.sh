@@ -9,7 +9,7 @@
 # Returns:
 #   None
 Version() {
-    echo '0.7.1'
+    echo '0.8.0'
 }
 
 # Print Short Usage of Command.
@@ -691,4 +691,37 @@ CommandEmptyExport() {
     esac
     # Process.
     ProcessFileArguments
+}
+
+CommandCopy() {
+    local _files_arguments _filter source_file
+    # Validate.
+    Validate minimal-arguments 1 $# "Source file not defined."
+    Validate minimal-arguments 2 $# "Target file not defined."
+    # Backup data dari option -f, --file, -D, -F, --type karena akan
+    # mengeksekusi command `export` yang mana menggunakan variable global
+    # `files_arguments` dan `filter`.
+    _files_arguments=("${files_arguments[@]}")
+    files_arguments=()
+    _filter="$filter"
+    filter=
+    # First operands is source file.
+    source_file="$1"
+    shift
+    # Execute export.
+    command=export
+    while read _each; do
+        tags_arguments+=("$_each")
+    done <<< `CommandEmptyExport "$source_file"`
+    # Restore variable `files_arguments` and `filter`.
+    files_arguments=("${_files_arguments[@]}")
+    filter="$_filter"
+    # Another operands is target file.
+    while [[ $# -gt 0 ]]; do
+        files_arguments+=("$1")
+        shift
+    done
+    # Execute add.
+    command=add
+    CommandAddSetDelete
 }
