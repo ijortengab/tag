@@ -40,9 +40,9 @@ case $command in
     add|a) shift; CommandAddSetDelete "$@"; exit;;
     set|s) shift; CommandAddSetDelete "$@"; exit;;
     delete|d) shift; CommandAddSetDelete "$@"; exit;;
-    empty|e) shift; CommandEmpty "$@"; exit;;
+    empty|e) shift; CommandEmptyExport "$@"; exit;;
     find|f) shift; CommandFind "$@"; exit;;
-    export|x) shift; CommandExport "$@"; exit;;
+    export|x) shift; CommandEmptyExport "$@"; exit;;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac
 

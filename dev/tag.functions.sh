@@ -664,20 +664,6 @@ CommandAddSetDelete() {
     ProcessFileArguments
 }
 
-CommandEmpty() {
-    AutoDetectOperands "$@"
-    # Validate.
-    Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
-    # Filter.
-    case $filter in
-        f) process_file=1; process_dir=0 ;;
-        d) process_file=0; process_dir=1 ;;
-        *) process_file=1; process_dir=1 ;;
-    esac
-    # Process.
-    ProcessFileArguments
-}
-
 CommandFind() {
     AutoDetectOperands "$@"
     # Filter.
@@ -690,7 +676,7 @@ CommandFind() {
     FindGenerator
 }
 
-CommandExport() {
+CommandEmptyExport() {
     AutoDetectOperands "$@"
     # Validate.
     Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
