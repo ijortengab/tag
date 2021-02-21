@@ -812,6 +812,9 @@ CommandAddSetDelete() {
 
 CommandFind() {
     AutoDetectOperands "$@"
+    # Remove duplicate.
+    ArrayUnique tags_arguments[@]
+    tags_arguments=("${_return[@]}")
     # Filter.
     case $filter in
         f) process_file=1; process_dir=0 ;;
