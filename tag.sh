@@ -792,11 +792,14 @@ ProcessFileArguments() {
     done
 }
 
-CommandAdd() {
+CommandAddSetDelete() {
     AutoDetectOperands "$@"
     # Validate.
     Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
     Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
+    # Remove duplicate.
+    ArrayUnique tags_arguments[@]
+    tags_arguments=("${_return[@]}")
     # Filter.
     case $filter in
         f) process_file=1; process_dir=0 ;;
@@ -845,9 +848,9 @@ fi
 
 command="$1";
 case $command in
-    add|a) shift; CommandAdd "$@"; exit;;
-    set|s) shift ;;
-    delete|d) shift ;;
+    add|a) shift; CommandAddSetDelete "$@"; exit;;
+    set|s) shift; CommandAddSetDelete "$@"; exit;;
+    delete|d) shift; CommandAddSetDelete "$@"; exit;;
     empty|e) shift ;;
     find|f) shift ;;
     export|x) shift; CommandExport "$@"; exit;;

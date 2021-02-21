@@ -646,11 +646,14 @@ ProcessFileArguments() {
     done
 }
 
-CommandAdd() {
+CommandAddSetDelete() {
     AutoDetectOperands "$@"
     # Validate.
     Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
     Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
+    # Remove duplicate.
+    ArrayUnique tags_arguments[@]
+    tags_arguments=("${_return[@]}")
     # Filter.
     case $filter in
         f) process_file=1; process_dir=0 ;;

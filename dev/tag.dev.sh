@@ -37,9 +37,9 @@ fi
 
 command="$1";
 case $command in
-    add|a) shift; CommandAdd "$@"; exit;;
-    set|s) shift ;;
-    delete|d) shift ;;
+    add|a) shift; CommandAddSetDelete "$@"; exit;;
+    set|s) shift; CommandAddSetDelete "$@"; exit;;
+    delete|d) shift; CommandAddSetDelete "$@"; exit;;
     empty|e) shift ;;
     find|f) shift ;;
     export|x) shift; CommandExport "$@"; exit;;
