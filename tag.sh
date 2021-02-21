@@ -824,13 +824,28 @@ CommandEmpty() {
     ProcessFileArguments
 }
 
+CommandFind() {
+    AutoDetectOperands "$@"
+    # Filter.
+    case $filter in
+        f) process_file=1; process_dir=0 ;;
+        d) process_file=0; process_dir=1 ;;
+        *) process_file=1; process_dir=1 ;;
+    esac
+    # Process.
+    FindGenerator
+}
+
 CommandExport() {
     AutoDetectOperands "$@"
     # Validate.
     Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
-    # Ignore option -D, -F, --type.
-    process_file=1
-    process_dir=1
+    # Filter.
+    case $filter in
+        f) process_file=1; process_dir=0 ;;
+        d) process_file=0; process_dir=1 ;;
+        *) process_file=1; process_dir=1 ;;
+    esac
     # Process.
     ProcessFileArguments
 }
@@ -866,7 +881,7 @@ case $command in
     set|s) shift; CommandAddSetDelete "$@"; exit;;
     delete|d) shift; CommandAddSetDelete "$@"; exit;;
     empty|e) shift; CommandEmpty "$@"; exit;;
-    find|f) shift ;;
+    find|f) shift; CommandFind "$@"; exit;;
     export|x) shift; CommandExport "$@"; exit;;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac

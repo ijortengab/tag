@@ -41,7 +41,7 @@ case $command in
     set|s) shift; CommandAddSetDelete "$@"; exit;;
     delete|d) shift; CommandAddSetDelete "$@"; exit;;
     empty|e) shift; CommandEmpty "$@"; exit;;
-    find|f) shift ;;
+    find|f) shift; CommandFind "$@"; exit;;
     export|x) shift; CommandExport "$@"; exit;;
     *) Die "Command '$1' unknown. Type --help for more info."
 esac
