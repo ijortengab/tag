@@ -560,7 +560,7 @@ TagDirectory() {
                         elif grep -q '^ -$' "$full_path";then
                             # First match entire file.
                             # https://stackoverflow.com/a/148473
-                            sed -i '0,/^ - $/s// - '"$e"'/' "$full_path"
+                            sed -i '0,/^ -$/s// - '"$e"'/' "$full_path"
                         else
                             echo " - $e" >> "$full_path"
                         fi
