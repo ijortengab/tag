@@ -51,7 +51,6 @@ esac
 while [[ $# -gt 0 ]]; do
     PathModify clear
     PathModify full-path "$1"
-    VarDump full_path dirname basename filename extension PWD
     if [ -f "$full_path" ];then
         files_arguments+=("$1")
     elif [ -d "$full_path" ];then
@@ -75,34 +74,27 @@ case $command in
         Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
 esac
 
-VarDump files_arguments tags_arguments
 ArrayUnique tags_arguments[@]
 tags_arguments=("${_return[@]}")
-VarDump files_arguments tags_arguments
-VarDump filter
 
 case $filter in
     f) process_file=1; process_dir=0 ;;
     d) process_file=0; process_dir=1 ;;
     *) process_file=1; process_dir=1 ;;
 esac
-VarDump process_file process_dir
 
 case $command in
     find|f) FindGenerator ;;
     *)  set -- "${files_arguments[@]}"
         while [[ $# -gt 0 ]]; do
-            VarDump full_path dirname basename filename extension PWD
             PathModify clear
             PathModify full-path "$1"
             if [ -f "$full_path" ];then
                 PathModify regular-file
             fi
-            VarDump full_path dirname basename filename extension PWD
             if [[ $extension == 'tag' ]];then
                 PathModify dot-tag
             fi
-            VarDump full_path dirname basename filename extension PWD
             if [[ -f "$full_path" && $process_file == 1 ]];then
                 TagFile
             elif [[ -d "$full_path" && $process_dir == 1 ]];then
@@ -114,6 +106,3 @@ case $command in
             shift
         done
 esac
-# VarDump --------
-# VarDump full_path dirname basename filename extension PWD
-# VarDump tags

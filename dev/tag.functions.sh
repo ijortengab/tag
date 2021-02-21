@@ -389,7 +389,6 @@ TagDirectory() {
     }
 
     tagInfo "$full_path"
-    VarDump tags
     case $command in
         add|a)
             ArrayDiff tags_arguments[@] tags[@]
@@ -436,11 +435,9 @@ TagDirectory() {
         delete|d)
             if [ -f "$full_path" ];then
                 ArrayDiff tags[@] tags_arguments[@]
-                VarDump tags_arguments
                 if [[ ! ${#tags[@]} == ${#_return[@]} ]];then
                     if [[ ! $dry_run == 1 ]];then
                         for e in "${tags_arguments[@]}"; do
-                            VarDump e
                             sed -i '/^ - '"$e"'$/d' "$full_path"
                         done
                     fi
@@ -452,7 +449,6 @@ TagDirectory() {
             if [ -f "$full_path" ];then
                 if [[ ! $dry_run == 1 ]];then
                     for e in "${tags[@]}"; do
-                        VarDump e
                         sed -i '/^ - '"$e"'$/d' "$full_path"
                     done
                 fi
@@ -613,12 +609,9 @@ FindGenerator() {
 }
 
 AutoDetectOperands() {
-    VarDump 'AutoDetectOperands' '<$#>'"$#"
-    VarDump files_arguments tags_arguments
     while [[ $# -gt 0 ]]; do
         PathModify clear
         PathModify full-path "$1"
-        VarDump full_path dirname basename filename extension PWD
         if [ -f "$full_path" ];then
             files_arguments+=("$1")
         elif [ -d "$full_path" ];then
@@ -628,23 +621,19 @@ AutoDetectOperands() {
         fi
         shift
     done
-    VarDump files_arguments tags_arguments
 }
 
 ProcessFileArguments() {
     set -- "${files_arguments[@]}"
     while [[ $# -gt 0 ]]; do
-        VarDump full_path dirname basename filename extension PWD
         PathModify clear
         PathModify full-path "$1"
         if [ -f "$full_path" ];then
             PathModify regular-file
         fi
-        VarDump full_path dirname basename filename extension PWD
         if [[ $extension == 'tag' ]];then
             PathModify dot-tag
         fi
-        VarDump full_path dirname basename filename extension PWD
         if [[ -f "$full_path" && $process_file == 1 ]];then
             TagFile
         elif [[ -d "$full_path" && $process_dir == 1 ]];then
@@ -659,25 +648,26 @@ ProcessFileArguments() {
 
 CommandAdd() {
     AutoDetectOperands "$@"
-    # Validate
+    # Validate.
     Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
     Validate minimal-arguments 1 ${#tags_arguments[@]} "Tag(s) not defined."
-    # Filter
+    # Filter.
     case $filter in
         f) process_file=1; process_dir=0 ;;
         d) process_file=0; process_dir=1 ;;
         *) process_file=1; process_dir=1 ;;
     esac
-    # Process
+    # Process.
     ProcessFileArguments
 }
 
 CommandExport() {
     AutoDetectOperands "$@"
-    # Validate
+    # Validate.
     Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
-    # Process
+    # Ignore option -D, -F, --type.
     process_file=1
     process_dir=1
+    # Process.
     ProcessFileArguments
 }
