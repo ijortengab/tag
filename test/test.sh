@@ -14,56 +14,56 @@ mkdir -p temporary
 cd temporary
 
 echo 'Simple tagging one file with two tags.'
-touch 'test-001.jpg'
-tester "tag add test-001.jpg apple banana" -o "test-001[apple banana].jpg" -fe "test-001[apple banana].jpg"
+touch 'a.jpg'
+tester "tag add a.jpg apple banana" -o "a[apple banana].jpg" -fe "a[apple banana].jpg"
 
 echo 'Simple tagging one file with four tags.'
-touch 'test-002.jpg'
-tester "tag add 'test-002.jpg' apple banana manggo cherry" -o "test-002[apple banana cherry manggo].jpg" -fe "test-002[apple banana cherry manggo].jpg"
+touch 'b.jpg'
+tester "tag add 'b.jpg' apple banana manggo cherry" -o "b[apple banana cherry manggo].jpg" -fe "b[apple banana cherry manggo].jpg"
 
 echo 'Tagging all file gif in current level directory with a tag.'
-touch 'test-001.gif'
-touch 'test-002.gif'
-touch 'test-003.gif'
-touch 'test-004.gif'
+touch 'a.gif'
+touch 'b.gif'
+touch 'c.gif'
+touch 'd.gif'
 output=$(cat <<-'EOF'
-test-001[manggo].gif
-test-002[manggo].gif
-test-003[manggo].gif
-test-004[manggo].gif
+a[manggo].gif
+b[manggo].gif
+c[manggo].gif
+d[manggo].gif
 EOF
 )
-tester "ls *.gif | tag add manggo" -o "$output" -fe test-001[manggo].gif -fe test-002[manggo].gif -fe test-003[manggo].gif -fe test-004[manggo].gif
+tester "ls *.gif | tag add manggo" -o "$output" -fe a[manggo].gif -fe b[manggo].gif -fe c[manggo].gif -fe d[manggo].gif
 
 echo 'Tagging all .bin files inside bin directory with a tag.'
 mkdir -p bin
-touch 'bin/test-001.bin'
-touch 'bin/test-002.bin'
-touch 'bin/test-003.bin'
-touch 'bin/test-004.bin'
+touch 'bin/a.bin'
+touch 'bin/b.bin'
+touch 'bin/c.bin'
+touch 'bin/d.bin'
 output=$(cat <<-EOF
-${PWD}/bin/test-001[orange].bin
-${PWD}/bin/test-002[orange].bin
-${PWD}/bin/test-003[orange].bin
-${PWD}/bin/test-004[orange].bin
+${PWD}/bin/a[orange].bin
+${PWD}/bin/b[orange].bin
+${PWD}/bin/c[orange].bin
+${PWD}/bin/d[orange].bin
 EOF
 )
-tester "ls bin/*.bin | tag add orange" -o "$output" -fe bin/test-001[orange].bin -fe bin/test-002[orange].bin -fe bin/test-003[orange].bin -fe bin/test-004[orange].bin
+tester "ls bin/*.bin | tag add orange" -o "$output" -fe bin/a[orange].bin -fe bin/b[orange].bin -fe bin/c[orange].bin -fe bin/d[orange].bin
 
 echo 'Tagging all files inside exe directory with a tag and make sure the -d options is require.'
 mkdir -p exe
-touch 'exe/test-001.exe'
-touch 'exe/test-002.exe'
-touch 'exe/test-003.exe'
-touch 'exe/test-004.exe'
+touch 'exe/a.exe'
+touch 'exe/b.exe'
+touch 'exe/c.exe'
+touch 'exe/d.exe'
 output=$(cat <<-'EOF'
-exe/test-001[apple].exe
-exe/test-002[apple].exe
-exe/test-003[apple].exe
-exe/test-004[apple].exe
+exe/a[apple].exe
+exe/b[apple].exe
+exe/c[apple].exe
+exe/d[apple].exe
 EOF
 )
-tester "ls exe/ | tag add apple -d exe/" -o "$output" -fe exe/test-001[apple].exe -fe exe/test-002[apple].exe -fe exe/test-003[apple].exe -fe exe/test-004[apple].exe
+tester "ls exe/ | tag add apple -d exe/" -o "$output" -fe exe/a[apple].exe -fe exe/b[apple].exe -fe exe/c[apple].exe -fe exe/d[apple].exe
 
 echo 'Simple tagging the music directory with two tags.'
 mkdir -p music
@@ -110,10 +110,63 @@ EOF
 )
 tester "tag export ./music/Queen/metadata.tag" -o "$output"
 
+echo 'Copy tag.'
+touch 'a[aa bb cc].png'
+touch 'b.png'
+tester "tag copy 'a[aa bb cc].png' b.png" -o "b[aa bb cc].png" -fe "b[aa bb cc].png" -fne "b.png"
+
+echo 'Copy tag.'
+touch 'c.png'
+touch 'd.png'
+tester "tag copy c.png d.png" -o "" -fe "c.png" -fe "d.png" --error
+
+echo 'Copy tag.'
+touch 'e[ee mm].png'
+touch 'f.png'
+tester "tag copy 'e[ee mm].png' 'f.png'" -o "f[ee mm].png" -fe "f[ee mm].png" -fne "f.png"
+
+echo 'Copy tag.'
+touch 'g[ee mm].png'
+touch 'h[bb kk].png'
+tester "tag copy 'g[ee mm].png' 'h[bb kk].png'" -o "h[bb ee kk mm].png" -fe "h[bb ee kk mm].png" -fne "h[bb kk].png"
+
+echo 'Copy tag.'
+touch 'i[ee kk mm].png'
+touch 'j[bb kk].png'
+tester "tag copy 'i[ee kk mm].png' 'j[bb kk].png'" -o "j[bb ee kk mm].png" -fe "j[bb ee kk mm].png" -fne "j[bb kk].png"
+
+echo 'Copy tag.'
+touch 'k[ee mm kk].png'
+touch 'l[kk bb].png'
+tester "tag copy -t ww 'k[ee mm kk].png' 'l[kk bb].png'" -o "l[bb ee kk mm ww].png" -fe "l[bb ee kk mm ww].png" -fne "l[kk bb].png"
+
+echo 'Copy tag.'
+touch 'm[ee mm kk].png'
+touch n.png
+touch 'o[kk bb].png'
+touch p.png
+output=$(cat <<-'EOF'
+n[ee kk mm www xxx].png
+o[bb ee kk mm www xxx].png
+p[ee kk mm www xxx].png
+EOF
+)
+tester "tag copy -t www -t xxx -f n.png 'm[ee mm kk].png' 'o[kk bb].png' p.png" \
+-o "$output" -fne "n.png" -fne "o[kk bb].png" -fne "p.png" \
+-fe "n[ee kk mm www xxx].png" -fe "o[bb ee kk mm www xxx].png" -fe "p[ee kk mm www xxx].png"
+
 read -rsn1 -p "Delete directory temporary? [y/n]" option
 
 if [[ $option == y ]];then
     cd ..
     rm -rf temporary/
     echo " "Deleted.
+else
+    echo
+    echo
+    cd ..
+    find temporary/
+    echo
+    echo rm -rf temporary/
+    echo
 fi

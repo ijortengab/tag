@@ -758,6 +758,16 @@ FindGenerator() {
     return 0
 }
 
+# Auto detect operand as file or tag.
+#
+# Globals:
+#   Modified: files_arguments, tags_arguments
+#
+# Arguments:
+#   $@: All operands that pass from tag arguments
+#
+# Returns:
+#   None
 AutoDetectOperands() {
     while [[ $# -gt 0 ]]; do
         PathModify clear
@@ -773,6 +783,16 @@ AutoDetectOperands() {
     done
 }
 
+# Process files by filter.
+#
+# Globals:
+#   Used: full_path, extension, process_file
+#
+# Arguments:
+#   None
+#
+# Returns:
+#   None
 ProcessFileArguments() {
     set -- "${files_arguments[@]}"
     while [[ $# -gt 0 ]]; do
@@ -796,6 +816,17 @@ ProcessFileArguments() {
     done
 }
 
+# Function for command: add, set, and delete.
+#
+# Globals:
+#   Used: files_arguments, tags_arguments, filter
+#   Modified: process_file, process_dir
+#
+# Arguments:
+#   $@: All operands that pass from tag arguments
+#
+# Returns:
+#   None
 CommandAddSetDelete() {
     AutoDetectOperands "$@"
     # Validate.
@@ -814,6 +845,17 @@ CommandAddSetDelete() {
     ProcessFileArguments
 }
 
+# Function for find command.
+#
+# Globals:
+#   Used: tags_arguments, filter
+#   Modified: process_file, process_dir
+#
+# Arguments:
+#   $@: All operands that pass from tag arguments
+#
+# Returns:
+#   None
 CommandFind() {
     AutoDetectOperands "$@"
     # Remove duplicate.
@@ -829,6 +871,17 @@ CommandFind() {
     FindGenerator
 }
 
+# Function for command: empty and export.
+#
+# Globals:
+#   Used: files_arguments, filter
+#   Modified: process_file, process_dir
+#
+# Arguments:
+#   $@: All operands that pass from tag arguments
+#
+# Returns:
+#   None
 CommandEmptyExport() {
     AutoDetectOperands "$@"
     # Validate.
@@ -843,6 +896,17 @@ CommandEmptyExport() {
     ProcessFileArguments
 }
 
+# Function for copy command.
+#
+# Globals:
+#   Used: files_arguments, filter
+#   Modified: command
+#
+# Arguments:
+#   $@: All operands that pass from tag arguments
+#
+# Returns:
+#   None
 CommandCopy() {
     local _files_arguments _filter source_file
     # Validate.
