@@ -810,6 +810,20 @@ CommandAddSetDelete() {
     ProcessFileArguments
 }
 
+CommandEmpty() {
+    AutoDetectOperands "$@"
+    # Validate.
+    Validate minimal-arguments 1 ${#files_arguments[@]} "File not defined."
+    # Filter.
+    case $filter in
+        f) process_file=1; process_dir=0 ;;
+        d) process_file=0; process_dir=1 ;;
+        *) process_file=1; process_dir=1 ;;
+    esac
+    # Process.
+    ProcessFileArguments
+}
+
 CommandExport() {
     AutoDetectOperands "$@"
     # Validate.
@@ -851,7 +865,7 @@ case $command in
     add|a) shift; CommandAddSetDelete "$@"; exit;;
     set|s) shift; CommandAddSetDelete "$@"; exit;;
     delete|d) shift; CommandAddSetDelete "$@"; exit;;
-    empty|e) shift ;;
+    empty|e) shift; CommandEmpty "$@"; exit;;
     find|f) shift ;;
     export|x) shift; CommandExport "$@"; exit;;
     *) Die "Command '$1' unknown. Type --help for more info."
