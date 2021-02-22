@@ -9,7 +9,7 @@
 # Returns:
 #   None
 Version() {
-    echo '0.8.0'
+    echo '0.8.1'
 }
 
 # Print Short Usage of Command.
@@ -371,7 +371,7 @@ TagFile() {
 # Output:
 #   Mencetak output jika eksekusi move berhasil.
 TagDirectory() {
-    local e option string line
+    local e option string line export
     local tags tags_new
     # Baris yang diawali dengan ` - ` (spasi strip spasi) adalah baris tag.
     isLineTag() {
@@ -393,12 +393,20 @@ TagDirectory() {
     }
     # Prepare file for tagging.
     prepareFile() {
-        # Add EOL in end of file.
-        # https://unix.stackexchange.com/a/161853
-        if [ -f "$full_path" ];then
-            tail -c1 < "$full_path"  | read -r _ || echo >> "$full_path"
+        if [[ $1 == '--dry-run' ]];then
+            if [ -f "$full_path" ];then
+                cat "$full_path"
+            else
+                echo "# Tags:"
+            fi
         else
-            echo "# Tags:" >> "$full_path"
+            # Add EOL in end of file.
+            # https://unix.stackexchange.com/a/161853
+            if [ -f "$full_path" ];then
+                tail -c1 < "$full_path"  | read -r _ || echo >> "$full_path"
+            else
+                echo "# Tags:" >> "$full_path"
+            fi
         fi
     }
 
@@ -423,9 +431,22 @@ TagDirectory() {
                             echo " - $e" >> "$full_path"
                         fi
                     done
+                else
+                    string=`prepareFile --dry-run`
+                    string+=$'\n'
+                    for e in "${tags_new[@]}"; do
+                        if [[ ! $(echo "$string" | grep '^ - $') == '' ]];then
+                            string=$(echo "$string"| sed '0,/^ - $/s// - '"$e"'/')
+                            string+=$'\n'
+                        elif [[ ! $(echo "$string" | grep '^ -$') == '' ]];then
+                            string=$(echo "$string"| sed '0,/^ -$/s// - '"$e"'/')
+                            string+=$'\n'
+                        else
+                            string+=" - $e"$'\n'
+                        fi
+                    done
                 fi
             fi
-            echo "$full_path"
         ;;
         set|s)
             if [[ ! $dry_run == 1 ]];then
@@ -436,8 +457,17 @@ TagDirectory() {
                 for e in "${tags_arguments[@]}"; do
                     echo " - $e" >> "$full_path"
                 done
+            else
+                string=`prepareFile --dry-run`
+                string+=$'\n'
+                for e in "${tags[@]}"; do
+                    string=$(echo "$string"| sed '/^ - '"$e"'$/d')
+                    string+=$'\n'
+                done
+                for e in "${tags_arguments[@]}"; do
+                    string+=" - $e"$'\n'
+                done
             fi
-            echo "$full_path"
         ;;
         delete|d)
             if [ -f "$full_path" ];then
@@ -447,10 +477,16 @@ TagDirectory() {
                         for e in "${tags_arguments[@]}"; do
                             sed -i '/^ - '"$e"'$/d' "$full_path"
                         done
+                    else
+                        string=`cat "$full_path"`
+                        string+=$'\n'
+                        for e in "${tags_arguments[@]}"; do
+                            string=$(echo "$string"| sed '/^ - '"$e"'$/d')
+                            string+=$'\n'
+                        done
                     fi
                 fi
             fi
-            echo "$full_path"
         ;;
         empty|e)
             if [ -f "$full_path" ];then
@@ -464,13 +500,33 @@ TagDirectory() {
                     rm "$full_path" && echo Deleted. >&2
                 fi
             fi
-            echo "$full_path"
         ;;
         export|x)
             for e in "${tags[@]}"; do
                 echo "$e"
             done
     esac
+
+    if [[ "$dirname" == "$PWD" ]];then
+        output="$basename"
+    else
+        output="$full_path"
+    fi
+
+    case $command in
+        add|a) export=1; echo "$output" ;;
+        set|s) export=1; echo "$output" ;;
+        delete|d) export=1; echo "$output" ;;
+        empty|e) echo "$output" ;;
+    esac
+
+    if [[ $export == 1 ]];then
+        if [[ ! $dry_run == 1 ]];then
+            cat "$full_path" | grep '^ - \w' >&2
+        else
+            echo "$string" | grep '^ - \w' >&2
+        fi
+    fi
 }
 
 # Generator find command dan mengekseskusinya (optional).
@@ -633,7 +689,8 @@ AutoDetectOperands() {
             files_arguments+=("$1")
         elif [ -d "$full_path" ];then
             files_arguments+=("$1")
-        else
+        elif [[ $(echo "$1" | grep -E "(\[|])") == '' ]];then
+            # tag tidak boleh mengandung kurung siku
             tags_arguments+=("$1")
         fi
         shift
