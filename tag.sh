@@ -537,6 +537,16 @@ TagDirectory() {
             done < "$1"
         fi
     }
+    # Prepare file for tagging.
+    prepareFile() {
+        # Add EOL in end of file.
+        # https://unix.stackexchange.com/a/161853
+        if [ -f "$full_path" ];then
+            tail -c1 < "$full_path"  | read -r _ || echo >> "$full_path"
+        else
+            echo "# Tags:" >> "$full_path"
+        fi
+    }
 
     tagInfo "$full_path"
     case $command in
@@ -545,13 +555,7 @@ TagDirectory() {
             tags_new=("${_return[@]}")
             if [[ ${#tags_new[@]} -gt 0 ]];then
                 if [[ ! $dry_run == 1 ]];then
-                    # Add EOL in end of file.
-                    # https://unix.stackexchange.com/a/161853
-                    if [ -f "$full_path" ];then
-                        tail -c1 < "$full_path"  | read -r _ || echo >> "$full_path"
-                    else
-                        echo "# Tags:" >> "$full_path"
-                    fi
+                    prepareFile
                     for e in "${tags_new[@]}"; do
                         if grep -q '^ - $' "$full_path";then
                             # First match entire file.
@@ -570,15 +574,14 @@ TagDirectory() {
             echo "$full_path"
         ;;
         set|s)
-            if [ -f "$full_path" ];then
-                if [[ ! $dry_run == 1 ]];then
-                    for e in "${tags[@]}"; do
-                        sed -i '/^ - '"$e"'$/d' "$full_path"
-                    done
-                    for e in "${tags_arguments[@]}"; do
-                        echo " - $e" >> "$full_path"
-                    done
-                fi
+            if [[ ! $dry_run == 1 ]];then
+                prepareFile
+                for e in "${tags[@]}"; do
+                    sed -i '/^ - '"$e"'$/d' "$full_path"
+                done
+                for e in "${tags_arguments[@]}"; do
+                    echo " - $e" >> "$full_path"
+                done
             fi
             echo "$full_path"
         ;;
