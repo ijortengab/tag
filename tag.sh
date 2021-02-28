@@ -155,7 +155,7 @@ ArrayUnique() {
 # Returns:
 #   None
 Version() {
-    echo '0.8.1'
+    echo '0.8.2'
 }
 
 # Print Short Usage of Command.
@@ -971,7 +971,12 @@ CommandCopy() {
     local _files_arguments _filter source_file
     # Validate.
     Validate minimal-arguments 1 $# "Source file not defined."
-    Validate minimal-arguments 2 $# "Target file not defined."
+    # First operands is source file.
+    source_file="$1"
+    shift
+    # Another operands is target file or tag.
+    AutoDetectOperands "$@"
+    Validate minimal-arguments 1 ${#files_arguments[@]} "Target file not defined."
     # Backup data dari option -f, --file, -D, -F, --type karena akan
     # mengeksekusi command `export` yang mana menggunakan variable global
     # `files_arguments` dan `filter`.
@@ -979,9 +984,6 @@ CommandCopy() {
     files_arguments=()
     _filter="$filter"
     filter=
-    # First operands is source file.
-    source_file="$1"
-    shift
     # Execute export.
     command=export
     while read _each; do
@@ -993,8 +995,6 @@ CommandCopy() {
     # Restore variable `files_arguments` and `filter`.
     files_arguments=("${_files_arguments[@]}")
     filter="$_filter"
-    # Another operands is target file or tag.
-    AutoDetectOperands "$@"
     # Execute add.
     command=add
     CommandAddSetDelete

@@ -155,6 +155,11 @@ tester "tag copy -t www -t xxx -f n.png 'm[ee mm kk].png' 'o[kk bb].png' p.png" 
 -o "$output" -fne "n.png" -fne "o[kk bb].png" -fne "p.png" \
 -fe "n[ee kk mm www xxx].png" -fe "o[bb ee kk mm www xxx].png" -fe "p[ee kk mm www xxx].png"
 
+echo 'Copy tag.'
+touch 'q[aa bb cc].png'
+touch r.png
+tester "ls r.png | tag copy 'q[aa bb cc].png'" -o "r[aa bb cc].png" -fe "r[aa bb cc].png"
+
 read -rsn1 -p "Delete directory temporary? [y/n]" option
 
 if [[ $option == y ]];then
